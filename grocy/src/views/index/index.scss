@@ -1,0 +1,36 @@
+.index-main {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 256px;
+    height: fit-content;
+    max-width: 90%;
+
+    .index-item {
+        background-color: var(--mantine-color-default);
+
+        &.title {
+            pointer-events: none;
+            user-select: none;
+            .app-logo {
+                width: 128px;
+                height: 128px;
+            }
+
+            .app-title {
+                font-size: 1.8em;
+            }
+        }
+
+        &.feature {
+            .item-text {
+                font-size: 1.2em;
+            }
+
+            svg {
+                font-size: 1.4em;
+            }
+        }
+    }
+}

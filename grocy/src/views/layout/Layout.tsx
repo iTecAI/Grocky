@@ -4,6 +4,7 @@ import "./layout.scss";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import { useEnvironment } from "../../util/hooks";
+import { MdLogin } from "react-icons/md";
 
 export function Layout() {
     const { t } = useTranslation();
@@ -20,6 +21,9 @@ export function Layout() {
                         <Button
                             className="btn-login"
                             size={height === "desktop" ? "md" : "compact-md"}
+                            variant="light"
+                            leftSection={<MdLogin size={"1.3em"} />}
+                            justify="space-between"
                         >
                             {t("views.layout.login")}
                         </Button>

@@ -5,6 +5,20 @@
   "views": {
     "layout": {
       "login": "Log In"
+    },
+    "index": {
+      "title": {
+        "logoAlt": "App logo"
+      },
+      "features": {
+        "collab": "Collaboration",
+        "budgeting": "Budgeting",
+        "data": "Product Data"
+      },
+      "actions": {
+        "login": "Log In",
+        "createAccount": "Create Account"
+      }
     }
   }
 }
