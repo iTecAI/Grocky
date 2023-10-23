@@ -2,3 +2,4 @@ litestar[standard]
 pydantic
 open-groceries
 pymongo
+python-dotenv
