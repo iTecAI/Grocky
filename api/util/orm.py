@@ -7,7 +7,6 @@ from uuid import uuid4
 @dataclass
 class Record:
     collection_name: ClassVar[str] = None
-    type: str
     id: str
     database: Database
 

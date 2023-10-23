@@ -23,6 +23,8 @@ class Context:
     def __init__(self) -> None:
         self.options: ContextOptions = self.get_options()
         self.event_queue: Queue[Event] = Queue()
+        self.client = MongoClient(host=self.options.db.host, port=self.options.db.port, authSource=self.options.db.database, username=self.options.db.user, password=self.options.db.password)
+        self.database = self.client[self.options.db.database]
 
     def get_options(self) -> ContextOptions:
         load_dotenv()
