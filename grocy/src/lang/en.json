@@ -1,0 +1,10 @@
+{
+  "common": {
+    "appName": "Grocy"
+  },
+  "views": {
+    "layout": {
+      "login": "Log In"
+    }
+  }
+}
