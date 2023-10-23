@@ -11,43 +11,60 @@
         position: relative;
         display: inline-block;
         width: 100%;
-        height: 56px;
+        height: 48px;
         box-sizing: border-box;
         padding: 8px;
-        
+
+        @media screen and (min-height: 800px) {
+            height: 56px;
+        }
+
         .header-group {
             height: 100%;
+
             .left {
-            position: relative;
-            display: inline-block;
-            height: 100%;
-            width: fit-content;
-            white-space: nowrap;
-            vertical-align: middle;
-            user-select: none;
-            pointer-events: none;
-
-            .app-icon {
                 position: relative;
-                height: 100%;
-                width: auto;
                 display: inline-block;
-                margin-right: 8px;
+                height: 100%;
+                width: fit-content;
+                white-space: nowrap;
+                vertical-align: middle;
+                user-select: none;
+                pointer-events: none;
 
-                img {
+                .app-icon {
+                    position: relative;
                     height: 100%;
                     width: auto;
+                    display: inline-block;
+                    margin-right: 8px;
+                    transform: translate(0, -2px);
+
+                    img {
+                        height: 100%;
+                        width: auto;
+                    }
+                }
+
+                .app-title {
+                    position: relative;
+                    display: inline-block;
+                    font-size: 1.5em;
+                    font-weight: 500;
+                    transform: translate(0, -8px);
+
+                    @media screen and (min-height: 800px) {
+                        transform: translate(0, -12px);
+                    }
                 }
             }
+        }
+    }
 
-            .app-title {
-                position: relative;
-                display: inline-block;
-                font-size: 1.5em;
-                font-weight: 500;
-                transform: translate(0, -12px);
-            }
-        }
-        }
+    .app-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        height: calc(100% - 48px);
     }
 }

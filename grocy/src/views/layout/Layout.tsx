@@ -1,10 +1,13 @@
-import { AppShell, Avatar, Button, Group } from "@mantine/core";
+import { AppShell, Avatar, Box, Button, Group } from "@mantine/core";
 import AppIcon from "../../assets/icon.svg";
 import "./layout.scss";
 import { useTranslation } from "react-i18next";
+import { Outlet } from "react-router-dom";
+import { useEnvironment } from "../../util/hooks";
 
 export function Layout() {
     const { t } = useTranslation();
+    const { height } = useEnvironment();
     return (
         <AppShell className="app-root">
             <AppShell.Header className="app-header">
@@ -14,12 +17,18 @@ export function Layout() {
                         <span className="app-title">{t("common.appName")}</span>
                     </Group>
                     <Group gap="md" className="right">
-                        <Button className="btn-login">
+                        <Button
+                            className="btn-login"
+                            size={height === "desktop" ? "md" : "compact-md"}
+                        >
                             {t("views.layout.login")}
                         </Button>
                     </Group>
                 </Group>
             </AppShell.Header>
+            <Box className="app-container" p="sm">
+                <Outlet />
+            </Box>
         </AppShell>
     );
 }
