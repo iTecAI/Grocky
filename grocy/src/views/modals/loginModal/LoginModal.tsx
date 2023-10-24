@@ -3,13 +3,11 @@ import { ContextModalProps } from "@mantine/modals";
 import { useTranslation } from "react-i18next";
 import { MdAccountCircle, MdCreate, MdLock, MdLogin } from "react-icons/md";
 import { useForm } from "@mantine/form";
+import { useModals } from "..";
 
-export function LoginModal({
-    context,
-    id,
-    innerProps,
-}: ContextModalProps<Record<string, never>>) {
+export function LoginModal({ context, id }: ContextModalProps<Record<string, never>>) {
     const { t } = useTranslation();
+    const { createAccount } = useModals();
     const form = useForm({
         initialValues: {
             username: "",
@@ -43,6 +41,10 @@ export function LoginModal({
                     <Button
                         variant="subtle"
                         leftSection={<MdCreate size={"1.2em"} />}
+                        onClick={() => {
+                            context.closeContextModal(id);
+                            createAccount();
+                        }}
                     >
                         {t("modals.login.actions.createAccount")}
                     </Button>

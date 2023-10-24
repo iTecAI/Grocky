@@ -41,7 +41,7 @@ function IndexItem({
 
 export function IndexView() {
     const { t } = useTranslation();
-    const { login } = useModals();
+    const { login, createAccount } = useModals();
     return (
         <Stack className="index-main" gap="md">
             <Paper className="index-item title" radius="md" shadow="sm" p="md">
@@ -92,6 +92,7 @@ export function IndexView() {
                         fullWidth
                         justify="space-between"
                         leftSection={<MdCreate size={"1.4em"} />}
+                        onClick={() => createAccount()}
                     >
                         {t("views.index.actions.createAccount")}
                     </Button>

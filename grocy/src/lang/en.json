@@ -38,6 +38,37 @@
         "createAccount": "Create Account",
         "login": "Login"
       }
+    },
+    "createAccount": {
+      "fields": {
+        "username": {
+          "label": "Username",
+          "placeholder": "a_cool_username"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "a_v3ry_s3cur3_passw0rd"
+        },
+        "passwordConfirm": {
+          "label": "Confirm Password"
+        }
+      },
+      "actions": {
+        "createAccount": "Create",
+        "login": "Login"
+      },
+      "title": "Create Account",
+      "passwordStrength": {
+        "label": "Password Strength: {{strength}}",
+        "weak": "Weak",
+        "good": "Good",
+        "acceptable": "Acceptable",
+        "feedback": {
+          "calcTime": "Guess Time",
+          "feedback": "Feedback",
+          "good": "Great password!"
+        }
+      }
     }
   },
   "errors": {
