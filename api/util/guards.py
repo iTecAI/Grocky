@@ -9,7 +9,7 @@ def guard_session(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     token = connection.headers.get("Authorization")
     if not token:
         raise ApiException(error_code="auth.session.not_present", status_code=HTTP_403_FORBIDDEN)
-    result = Session.load_id(context.database)
+    result = Session.load_id(context.database, token)
     if not result:
         raise ApiException(error_code="auth.session.invalid", status_code=HTTP_401_UNAUTHORIZED)
     valid = context.check_session(result)

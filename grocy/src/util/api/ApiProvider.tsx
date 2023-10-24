@@ -26,6 +26,9 @@ export function ApiProvider({
                     .then((data) => {
                         setSession(data);
                         localStorage.setItem("token", data.id);
+                        if (data.user) {
+                            setUser(data.user);
+                        }
                         setReady(true);
                     })
                     .catch((reason) =>

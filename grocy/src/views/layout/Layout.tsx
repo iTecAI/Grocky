@@ -6,11 +6,14 @@ import { Outlet } from "react-router-dom";
 import { useEnvironment } from "../../util/hooks";
 import { MdLogin } from "react-icons/md";
 import { useModals } from "../modals";
+import { useUser } from "../../util/api";
 
 export function Layout() {
     const { t } = useTranslation();
     const { height } = useEnvironment();
     const { login } = useModals();
+    const [user] = useUser();
+
     return (
         <AppShell className="app-root">
             <AppShell.Header className="app-header">
@@ -20,16 +23,22 @@ export function Layout() {
                         <span className="app-title">{t("common.appName")}</span>
                     </Group>
                     <Group gap="md" className="right">
-                        <Button
-                            className="btn-login"
-                            size={height === "desktop" ? "md" : "compact-md"}
-                            variant="light"
-                            leftSection={<MdLogin size={"1.3em"} />}
-                            justify="space-between"
-                            onClick={() => login()}
-                        >
-                            {t("views.layout.login")}
-                        </Button>
+                        {user ? (
+                            <></>
+                        ) : (
+                            <Button
+                                className="btn-login"
+                                size={
+                                    height === "desktop" ? "md" : "compact-md"
+                                }
+                                variant="light"
+                                leftSection={<MdLogin size={"1.3em"} />}
+                                justify="space-between"
+                                onClick={() => login()}
+                            >
+                                {t("views.layout.login")}
+                            </Button>
+                        )}
                     </Group>
                 </Group>
             </AppShell.Header>

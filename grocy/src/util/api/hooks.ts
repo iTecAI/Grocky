@@ -1,5 +1,5 @@
 import { useContext, useMemo } from "react";
-import { Session } from "../../types/auth";
+import { Session, User } from "../../types/auth";
 import { ApiContext, RequestFunction } from "./types";
 import { ApiMethods } from "./methods";
 
@@ -14,12 +14,20 @@ export function useRequest(): RequestFunction {
 }
 
 export function useApi(): ApiMethods {
-    const session = useSession();
-    const request = useRequest();
+    const context = useContext(ApiContext);
 
     const methods = useMemo(
-        () => new ApiMethods(session, request),
-        [session, request],
+        () => new ApiMethods(context, context.request),
+        [context.session, context.request, context.user, context.ready],
     );
     return methods;
+}
+
+export function useUser(): [User | null, (user: User | null) => void] {
+    const { user, setUser } = useContext(ApiContext);
+    return [user, setUser];
+}
+
+export function useReady(): boolean {
+    return useContext(ApiContext).ready;
 }

@@ -6,6 +6,7 @@ import { TranslationProvider } from "./util/translation";
 import { ApiProvider } from "./util/api";
 import { ModalsProvider } from "@mantine/modals";
 import { MODALS } from "./views/modals";
+import { Notifications } from "@mantine/notifications";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                 theme={themeDefault}
             >
                 <ApiProvider>
+                    <Notifications />
                     <ModalsProvider
                         modals={MODALS}
                         modalProps={{ withCloseButton: true }}

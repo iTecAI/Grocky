@@ -25,6 +25,9 @@ import { useForm } from "@mantine/form";
 import { useModals } from "..";
 import { useEffect, useState } from "react";
 import { usePasswordStrength } from "../../../util/hooks";
+import { useApi } from "../../../util/api";
+import { isString } from "lodash";
+import { useNotifications } from "../../../util/notifications";
 
 export function CreateAccountModal({
     context,
@@ -34,6 +37,9 @@ export function CreateAccountModal({
     const { login } = useModals();
     const [pass, setPass] = useState<string>("");
     const passwordScore = usePasswordStrength(pass);
+    const { auth } = useApi();
+    const { error, success } = useNotifications();
+
     const form = useForm({
         initialValues: {
             username: "",
@@ -59,7 +65,18 @@ export function CreateAccountModal({
     useEffect(() => setPass(form.values.password), [form.values.password]);
 
     return (
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form
+            onSubmit={form.onSubmit(({ username, password }) =>
+                auth.createAccount(username, password).then((result) => {
+                    if (isString(result)) {
+                        error(result, true);
+                    } else {
+                        success(t("modals.createAccount.success"));
+                        context.closeModal(id);
+                    }
+                }),
+            )}
+        >
             <Stack gap="md" align="stretch" className="login-modal modal">
                 <TextInput
                     {...form.getInputProps("username")}

@@ -1,6 +1,12 @@
 {
   "common": {
-    "appName": "Grocy"
+    "appName": "Grocy",
+    "notifications": {
+      "success": "Success!",
+      "warning": "Warning:",
+      "error": "Error!",
+      "info": "Info:"
+    }
   },
   "views": {
     "layout": {
@@ -68,7 +74,8 @@
           "feedback": "Feedback",
           "good": "Great password!"
         }
-      }
+      },
+      "success": "Account created successfully!"
     }
   },
   "errors": {

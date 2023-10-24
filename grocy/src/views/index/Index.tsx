@@ -11,6 +11,7 @@ import {
     MdPriceCheck,
 } from "react-icons/md";
 import { useModals } from "../modals";
+import { useUser } from "../../util/api";
 
 function IndexItem({
     name,
@@ -42,6 +43,7 @@ function IndexItem({
 export function IndexView() {
     const { t } = useTranslation();
     const { login, createAccount } = useModals();
+    const [user] = useUser();
     return (
         <Stack className="index-main" gap="md">
             <Paper className="index-item title" radius="md" shadow="sm" p="md">
@@ -77,26 +79,30 @@ export function IndexView() {
                 shadow="sm"
                 p="md"
             >
-                <Stack gap="md" align="center">
-                    <Button
-                        className="action login"
-                        fullWidth
-                        justify="space-between"
-                        leftSection={<MdLogin size={"1.4em"} />}
-                        onClick={() => login()}
-                    >
-                        {t("views.index.actions.login")}
-                    </Button>
-                    <Button
-                        className="action login"
-                        fullWidth
-                        justify="space-between"
-                        leftSection={<MdCreate size={"1.4em"} />}
-                        onClick={() => createAccount()}
-                    >
-                        {t("views.index.actions.createAccount")}
-                    </Button>
-                </Stack>
+                {user ? (
+                    <></>
+                ) : (
+                    <Stack gap="md" align="center">
+                        <Button
+                            className="action login"
+                            fullWidth
+                            justify="space-between"
+                            leftSection={<MdLogin size={"1.4em"} />}
+                            onClick={() => login()}
+                        >
+                            {t("views.index.actions.login")}
+                        </Button>
+                        <Button
+                            className="action login"
+                            fullWidth
+                            justify="space-between"
+                            leftSection={<MdCreate size={"1.4em"} />}
+                            onClick={() => createAccount()}
+                        >
+                            {t("views.index.actions.createAccount")}
+                        </Button>
+                    </Stack>
+                )}
             </Paper>
         </Stack>
     );

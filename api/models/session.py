@@ -22,7 +22,7 @@ class Session(Record):
 
     @property
     def json(self) -> "SessionModel":
-        SessionModel(
+        return SessionModel(
             id=self.id,
             last_request=self.last_request,
             user=self.user_data.redacted if self.user else None,

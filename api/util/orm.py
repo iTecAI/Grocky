@@ -46,7 +46,7 @@ class Record:
         return {k:v for k, v in self.__dict__.items() if not k in ["database", "_id"]}
     
     def save(self):
-        self.collection.replace_one({"id": self.id}, self.json, upsert=True)
+        self.collection.replace_one({"id": self.id}, {k:v for k, v in self.__dict__.items() if not k in ["database", "_id"]}, upsert=True)
     
     def destroy(self):
         self.collection.delete_one({"id": self.id})
