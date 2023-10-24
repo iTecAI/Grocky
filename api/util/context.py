@@ -4,7 +4,8 @@ from os import environ, getenv
 from dataclasses import dataclass
 from typing import Optional
 from asyncio.queues import Queue
-from models import Event
+from models import Event, Session
+import time
 
 @dataclass
 class DatabaseOptions:
@@ -45,3 +46,11 @@ class Context:
                 session_timeout=int(getenv("SESSION_TIMEOUT", "3600"))
             )
         )
+    
+    def check_session(self, session: Session) -> bool:
+        if session.last_request + self.options.security.session_timeout < time.time():
+            session.destroy()
+            return False
+        else:
+            session.last_request = time.time()
+            return True

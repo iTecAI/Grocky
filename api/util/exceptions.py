@@ -5,7 +5,7 @@ class ApiException(Exception):
     def __init__(
         self,
         error_code: str,
-        error_data: Any,
+        error_data: Any = None,
         detail: str = None,
         status_code: int | None = 400,
         headers: dict[str, str] | None = None,
