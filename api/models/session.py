@@ -12,4 +12,6 @@ class Session(Record):
 
     @classmethod
     def create(cls, database: Database) -> "Session":
-        return Session(id=cls._id(), database=database, last_request=time.time(), user=None)
+        new_session = Session(id=cls._id(), database=database, last_request=time.time(), user=None)
+        new_session.save()
+        return new_session

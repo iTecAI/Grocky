@@ -41,11 +41,12 @@ class Record:
     def collection(self) -> Collection:
         return self.database[self.collection_name]
     
-    def serialize(self) -> dict:
+    @property
+    def json(self) -> dict:
         return {k:v for k, v in self.__dict__.items() if not k in ["database"]}
     
     def save(self):
-        self.collection.update_one({"id": self.id}, self.serialize(), upsert=True)
+        self.collection.replace_one({"id": self.id}, self.json, upsert=True)
     
     def destroy(self):
         self.collection.delete_one({"id": self.id})

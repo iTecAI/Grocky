@@ -4,7 +4,7 @@ from os import environ, getenv
 from dataclasses import dataclass
 from typing import Optional
 from asyncio.queues import Queue
-from typings import Event
+from models import Event
 
 @dataclass
 class DatabaseOptions:
@@ -14,10 +14,15 @@ class DatabaseOptions:
     user: Optional[str]
     password: Optional[str]
 
+@dataclass
+class SecurityOptions:
+    session_timeout: int
+
 
 @dataclass
 class ContextOptions:
     db: DatabaseOptions
+    security: SecurityOptions
 
 class Context:
     def __init__(self) -> None:
@@ -35,5 +40,8 @@ class Context:
                 database=getenv("MONGO_DATABASE", "grocy"),
                 user=getenv("MONGO_USER", "grocy"),
                 password=getenv("MONGO_PASSWORD")
+            ),
+            security=SecurityOptions(
+                session_timeout=int(getenv("SESSION_TIMEOUT", "3600"))
             )
         )
