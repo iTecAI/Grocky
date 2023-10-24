@@ -13,13 +13,15 @@ export type ApiResponse<T> =
           data?: any;
       };
 
+export type RequestFunction = <T>(
+    method: "get" | "post" | "put" | "delete",
+    url: string,
+    options?: { params?: { [key: string]: any }; body?: any },
+) => Promise<ApiResponse<T>>;
+
 export type ApiContextType = {
     session: Session | null;
-    request: <T>(
-        method: "get" | "post" | "put" | "delete",
-        url: string,
-        options?: { params?: { [key: string]: any }; body?: any },
-    ) => Promise<ApiResponse<T>>;
+    request: RequestFunction;
 };
 
 export const ApiContext = createContext<ApiContextType>({
