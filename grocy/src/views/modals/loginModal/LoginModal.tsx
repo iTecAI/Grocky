@@ -4,10 +4,15 @@ import { useTranslation } from "react-i18next";
 import { MdAccountCircle, MdCreate, MdLock, MdLogin } from "react-icons/md";
 import { useForm } from "@mantine/form";
 import { useModals } from "..";
+import { useApi } from "../../../util/api";
+import { useNotifications } from "../../../util/notifications";
+import { isString } from "lodash";
 
 export function LoginModal({ context, id }: ContextModalProps<Record<string, never>>) {
     const { t } = useTranslation();
     const { createAccount } = useModals();
+    const { auth } = useApi();
+    const { error, success } = useNotifications();
     const form = useForm({
         initialValues: {
             username: "",
@@ -21,7 +26,18 @@ export function LoginModal({ context, id }: ContextModalProps<Record<string, nev
         },
     });
     return (
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form
+            onSubmit={form.onSubmit(({ username, password }) =>
+                auth.login(username, password).then((result) => {
+                    if (isString(result)) {
+                        error(result, true);
+                    } else {
+                        success(t("modals.login.success"));
+                        context.closeModal(id);
+                    }
+                }),
+            )}
+        >
             <Stack gap="md" align="stretch" className="login-modal modal">
                 <TextInput
                     {...form.getInputProps("username")}

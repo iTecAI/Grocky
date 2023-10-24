@@ -10,7 +10,8 @@
   },
   "views": {
     "layout": {
-      "login": "Log In"
+      "login": "Log In",
+      "logout": "Log Out"
     },
     "index": {
       "title": {
@@ -43,7 +44,8 @@
       "actions": {
         "createAccount": "Create Account",
         "login": "Login"
-      }
+      },
+      "success": "Logged in!"
     },
     "createAccount": {
       "fields": {
@@ -87,6 +89,16 @@
         "usernameLength": "Username must be at least 4 characters",
         "passwordMatch": "Passwords must match",
         "weakPassword": "Password too weak"
+      }
+    },
+    "api": {
+      "auth": {
+        "account": {
+          "creation": {
+            "exists": "Account already exists."
+          },
+          "invalid": "Incorrect username or password."
+        }
       }
     }
   }

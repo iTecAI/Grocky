@@ -1,9 +1,9 @@
 from litestar.controller import Controller
-from litestar import get, post
+from litestar import get, post, delete
 from litestar.params import Parameter
 from litestar.status_codes import *
 from litestar.di import Provide
-from util import Context, ApiException, guard_session, depends_session
+from util import Context, ApiException, guard_session, depends_session, guard_logged_in
 from models import Session, User, UserCreationModel, RedactedUser, SessionModel
 from typing import Annotated, Optional
 import time
@@ -81,3 +81,9 @@ class AuthController(Controller):
         session.user = users[0].id
         session.save()
         return users[0].redacted
+    
+    @delete("/login", guards=[guard_logged_in], dependencies={"session": Provide(depends_session)},)
+    async def logout(self, context: Context, session: Session) -> None:
+        session.user = None
+        session.save()
+        return None

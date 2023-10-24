@@ -4,14 +4,15 @@ import "./layout.scss";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import { useEnvironment } from "../../util/hooks";
-import { MdLogin } from "react-icons/md";
+import { MdLogin, MdLogout } from "react-icons/md";
 import { useModals } from "../modals";
-import { useUser } from "../../util/api";
+import { useApi, useUser } from "../../util/api";
 
 export function Layout() {
     const { t } = useTranslation();
     const { height } = useEnvironment();
     const { login } = useModals();
+    const { auth } = useApi();
     const [user] = useUser();
 
     return (
@@ -24,7 +25,18 @@ export function Layout() {
                     </Group>
                     <Group gap="md" className="right">
                         {user ? (
-                            <></>
+                            <Button
+                                className="btn-logout"
+                                size={
+                                    height === "desktop" ? "md" : "compact-md"
+                                }
+                                variant="light"
+                                leftSection={<MdLogout size={"1.3em"} />}
+                                justify="space-between"
+                                onClick={() => auth.logout()}
+                            >
+                                {t("views.layout.logout")}
+                            </Button>
                         ) : (
                             <Button
                                 className="btn-login"

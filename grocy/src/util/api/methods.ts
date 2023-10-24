@@ -42,6 +42,16 @@ class AuthApiMethods {
             return result.code;
         }
     }
+
+    public async logout(): Promise<null> {
+        if (!this.context.user) {
+            return null;
+        }
+
+        await this.request("delete", "/auth/login");
+        this.context.setUser(null);
+        return null;
+    }
 }
 
 export class ApiMethods {
