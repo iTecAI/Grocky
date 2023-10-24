@@ -34,3 +34,7 @@ class User(Record):
     def check(self, password: str) -> bool:
         derived = self.derive(password, self.password_salt)
         return derived == self.password_hash
+    
+    @property
+    def safe_json(self) -> dict:
+        return {"id": self.id, "username": self.username}
