@@ -1,2 +1,3 @@
 from .event import Event, EventPacket, EventTarget
-from .session import Session
+from .session import Session, SessionModel
+from .user import *

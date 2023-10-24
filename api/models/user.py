@@ -38,5 +38,20 @@ class User(Record):
         return derived == self.password_hash
     
     @property
-    def safe_json(self) -> dict:
-        return {"id": self.id, "username": self.username}
+    def redacted(self) -> "RedactedUser":
+        return RedactedUser(
+            id=self.id,
+            username=self.username,
+            display_name=self.display_name
+        )
+    
+@dataclass
+class UserCreationModel:
+    username: str
+    password: str
+
+@dataclass
+class RedactedUser:
+    id: str
+    username: str
+    display_name: str

@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Session } from "../../types/auth";
+import { Session, User } from "../../types/auth";
 
 export type ApiResponse<T> =
     | {
@@ -22,6 +22,9 @@ export type RequestFunction = <T>(
 export type ApiContextType = {
     session: Session | null;
     request: RequestFunction;
+    user: User | null;
+    setUser: (user: User | null) => void;
+    ready: boolean;
 };
 
 export const ApiContext = createContext<ApiContextType>({
@@ -31,4 +34,7 @@ export const ApiContext = createContext<ApiContextType>({
         status: 0,
         code: "internal.notInitialized",
     }),
+    user: null,
+    setUser: () => {},
+    ready: false,
 });

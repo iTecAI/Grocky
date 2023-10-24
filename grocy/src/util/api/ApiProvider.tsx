@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
-import { Session } from "../../types/auth";
+import { Session, User } from "../../types/auth";
 import { ApiContext, ApiResponse } from "./types";
 
 export function ApiProvider({
@@ -8,6 +8,8 @@ export function ApiProvider({
     children?: ReactNode | ReactNode[];
 }) {
     const [session, setSession] = useState<Session | null>(null);
+    const [user, setUser] = useState<User | null>(null);
+    const [ready, setReady] = useState<boolean>(false);
 
     useEffect(() => {
         fetch("/api/auth/session", {
@@ -24,6 +26,7 @@ export function ApiProvider({
                     .then((data) => {
                         setSession(data);
                         localStorage.setItem("token", data.id);
+                        setReady(true);
                     })
                     .catch((reason) =>
                         console.error("JSON parse error: ", reason),
@@ -43,7 +46,8 @@ export function ApiProvider({
             let result: Response;
             try {
                 result = await fetch(
-                    url +
+                    "/api" +
+                        url +
                         (options?.params
                             ? `?${new URLSearchParams(options.params)}`
                             : ""),
@@ -102,7 +106,7 @@ export function ApiProvider({
     );
 
     return (
-        <ApiContext.Provider value={{ session, request }}>
+        <ApiContext.Provider value={{ session, request, user, setUser, ready }}>
             {children}
         </ApiContext.Provider>
     );

@@ -1,19 +1,55 @@
-import { Session } from "../../types/auth";
-import { RequestFunction } from "./types";
+import { User } from "../../types/auth";
+import { RequestFunction, ApiContextType } from "./types";
 
 class AuthApiMethods {
     constructor(
-        private session: Session | null,
+        private context: ApiContextType,
         private request: RequestFunction,
     ) {}
+
+    public async createAccount(
+        username: string,
+        password: string,
+    ): Promise<User | string> {
+        const result = await this.request<User>("post", "/auth/user/create", {
+            body: {
+                username,
+                password,
+            },
+        });
+        if (result.success) {
+            this.context.setUser(result.data);
+            return result.data;
+        } else {
+            return result.code;
+        }
+    }
+
+    public async login(
+        username: string,
+        password: string,
+    ): Promise<User | string> {
+        const result = await this.request<User>("post", "/auth/login", {
+            body: {
+                username,
+                password,
+            },
+        });
+        if (result.success) {
+            this.context.setUser(result.data);
+            return result.data;
+        } else {
+            return result.code;
+        }
+    }
 }
 
 export class ApiMethods {
     public auth: AuthApiMethods;
     constructor(
-        private session: Session | null,
+        private context: ApiContextType,
         private request: RequestFunction,
     ) {
-        this.auth = new AuthApiMethods(this.session, this.request);
+        this.auth = new AuthApiMethods(this.context, this.request);
     }
 }

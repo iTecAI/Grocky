@@ -1,5 +1,11 @@
 export type Session = {
     id: string;
     last_request: number;
-    user: string | null;
+    user: User | null;
+};
+
+export type User = {
+    id: string;
+    username: string;
+    display_name: string;
 };
