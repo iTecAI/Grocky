@@ -26,6 +26,14 @@
         "login": "Log In",
         "createAccount": "Create Account"
       }
+    },
+    "home": {
+      "items": {
+        "create": {
+          "list": "New List",
+          "group": "New Group"
+        }
+      }
     }
   },
   "modals": {

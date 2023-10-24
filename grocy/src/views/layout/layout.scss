@@ -67,5 +67,9 @@
         width: 100%;
         height: calc(100% - 48px);
         overflow-y: auto;
+
+        @media screen and (min-height: 800px) {
+            height: calc(100% - 56px);
+        }
     }
 }

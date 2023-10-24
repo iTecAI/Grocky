@@ -34,3 +34,54 @@
         }
     }
 }
+
+.index-main {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+
+    .grocy-item {
+        height: 384px;
+
+        &.create {
+            border-style: dashed;
+            padding: 0px;
+
+            .creation-button {
+                width: 100%;
+                height: 50%;
+                position: relative;
+                display: inline-block;
+                cursor: pointer;
+                transition: background-color 0.1s;
+
+                svg {
+                    position: absolute;
+                    top: calc(50% - 12px);
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    user-select: none;
+                    pointer-events: none;
+                }
+
+                .button-title {
+                    position: absolute;
+                    top: calc(50% + 12px);
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    user-select: none;
+                    pointer-events: none;
+                }
+
+                &.list {
+                    border-bottom: 1px dashed var(--mantine-color-default-border);
+                }
+
+                &:hover {
+                    background-color: var(--mantine-color-default-hover);
+                }
+            }
+        }
+    }
+}
