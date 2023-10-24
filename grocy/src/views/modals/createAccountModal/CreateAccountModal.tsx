@@ -40,10 +40,23 @@ export function CreateAccountModal({
             password: "",
             passwordConfirm: "",
         },
+        validate: {
+            username: (value) =>
+                value.length > 3 ? null : t("errors.ui.account.usernameLength"),
+            password: (value, { passwordConfirm }) =>
+                value === passwordConfirm
+                    ? passwordScore.score > 2
+                        ? null
+                        : t("errors.ui.account.weakPassword")
+                    : t("errors.ui.account.passwordMatch"),
+            passwordConfirm: (value, { password }) =>
+                value === password
+                    ? null
+                    : t("errors.ui.account.passwordMatch"),
+        },
     });
 
     useEffect(() => setPass(form.values.password), [form.values.password]);
-    useEffect(() => console.log(passwordScore.feedback), [passwordScore]);
 
     return (
         <form onSubmit={form.onSubmit((values) => console.log(values))}>

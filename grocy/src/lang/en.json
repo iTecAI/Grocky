@@ -75,6 +75,11 @@
     "ui": {
       "common": {
         "requiredField": "This field is required"
+      },
+      "account": {
+        "usernameLength": "Username must be at least 4 characters",
+        "passwordMatch": "Passwords must match",
+        "weakPassword": "Password too weak"
       }
     }
   }
