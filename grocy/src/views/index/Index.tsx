@@ -10,6 +10,7 @@ import {
     MdLogin,
     MdPriceCheck,
 } from "react-icons/md";
+import { useModals } from "../modals";
 
 function IndexItem({
     name,
@@ -40,6 +41,7 @@ function IndexItem({
 
 export function IndexView() {
     const { t } = useTranslation();
+    const { login } = useModals();
     return (
         <Stack className="index-main" gap="md">
             <Paper className="index-item title" radius="md" shadow="sm" p="md">
@@ -81,6 +83,7 @@ export function IndexView() {
                         fullWidth
                         justify="space-between"
                         leftSection={<MdLogin size={"1.4em"} />}
+                        onClick={() => login()}
                     >
                         {t("views.index.actions.login")}
                     </Button>

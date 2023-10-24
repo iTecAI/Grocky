@@ -4,6 +4,8 @@ import { routes } from "./util/routes";
 import { themeDefault } from "./themes/default";
 import { TranslationProvider } from "./util/translation";
 import { ApiProvider } from "./util/api";
+import { ModalsProvider } from "@mantine/modals";
+import { MODALS } from "./views/modals";
 
 function App() {
     return (
@@ -14,7 +16,12 @@ function App() {
                 theme={themeDefault}
             >
                 <ApiProvider>
-                    <RouterProvider router={routes} />
+                    <ModalsProvider
+                        modals={MODALS}
+                        modalProps={{ withCloseButton: true }}
+                    >
+                        <RouterProvider router={routes} />
+                    </ModalsProvider>
                 </ApiProvider>
             </MantineProvider>
         </TranslationProvider>

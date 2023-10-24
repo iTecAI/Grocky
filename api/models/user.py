@@ -10,6 +10,7 @@ ITERS = 200000
 class User(Record):
     collection_name = "users"
     username: str
+    display_name: str
     password_hash: str
     password_salt: str
 
@@ -25,6 +26,7 @@ class User(Record):
             id=cls._id(),
             database=database,
             username=username,
+            display_name=username,
             password_hash=key,
             password_salt=salt
         )

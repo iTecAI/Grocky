@@ -5,10 +5,12 @@ import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import { useEnvironment } from "../../util/hooks";
 import { MdLogin } from "react-icons/md";
+import { useModals } from "../modals";
 
 export function Layout() {
     const { t } = useTranslation();
     const { height } = useEnvironment();
+    const { login } = useModals();
     return (
         <AppShell className="app-root">
             <AppShell.Header className="app-header">
@@ -24,6 +26,7 @@ export function Layout() {
                             variant="light"
                             leftSection={<MdLogin size={"1.3em"} />}
                             justify="space-between"
+                            onClick={() => login()}
                         >
                             {t("views.layout.login")}
                         </Button>

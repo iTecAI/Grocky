@@ -20,5 +20,31 @@
         "createAccount": "Create Account"
       }
     }
+  },
+  "modals": {
+    "login": {
+      "title": "Login",
+      "fields": {
+        "username": {
+          "label": "Username",
+          "placeholder": "a_cool_username"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "a_v3ry_s3cur3_passw0rd"
+        }
+      },
+      "actions": {
+        "createAccount": "Create Account",
+        "login": "Login"
+      }
+    }
+  },
+  "errors": {
+    "ui": {
+      "common": {
+        "requiredField": "This field is required"
+      }
+    }
   }
 }
