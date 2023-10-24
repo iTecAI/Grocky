@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import ClassVar, Union
+from typing import ClassVar, Union, Any
 from pymongo.collection import Collection
 from pymongo.database import Database
 from uuid import uuid4
@@ -23,7 +23,7 @@ class Record:
         collection = database[cls.collection_name]
         result = collection.find_one({"id": id})
         if result:
-            return cls(database=database, **result)
+            return cls(database=database, **{k:v for k, v in result.items() if k != "_id"})
         else:
             return None
         
@@ -31,7 +31,7 @@ class Record:
     def load_query(cls, database: Database, query: dict) -> list["Record"]:
         collection = database[cls.collection_name]
         result = collection.find(query)
-        return [cls(database=database, **r) for r in result]
+        return [cls(database=database, **{k:v for k, v in r.items() if k != "_id"}) for r in result]
     
     @classmethod
     def deserialize(cls, database: Database, data: dict) -> "Record":
@@ -43,7 +43,7 @@ class Record:
     
     @property
     def json(self) -> dict:
-        return {k:v for k, v in self.__dict__.items() if not k in ["database"]}
+        return {k:v for k, v in self.__dict__.items() if not k in ["database", "_id"]}
     
     def save(self):
         self.collection.replace_one({"id": self.id}, self.json, upsert=True)

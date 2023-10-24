@@ -1,7 +1,7 @@
-from litestar import Litestar, MediaType, Request, Response, get
+from litestar import Litestar, Request, Response, get
 from litestar.datastructures import State
 from litestar.di import Provide
-from util import Context
+from util import Context, ApiException
 from controllers import *
 from litestar.status_codes import *
 from time import ctime
@@ -10,15 +10,31 @@ from time import ctime
 async def dep_context(state: State) -> Context:
     return state.context
 
-def plain_text_exception_handler(req: Request, exc: Exception) -> Response:
+def server_exception_handler(req: Request, exc: Exception) -> Response:
     """Default handler for exceptions subclassed from HTTPException."""
     status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
     detail = getattr(exc, "detail", "")
     req.app.logger.exception("Encountered server error:\n")
 
     return Response(
-        media_type=MediaType.TEXT,
-        content=detail,
+        content={
+            "code": "error.server.unspecified",
+            "data": {
+                "detail": detail
+            }
+        },
+        status_code=status_code,
+    )
+
+def api_exception_handler(req: Request, exc: ApiException) -> Response:
+    status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
+    req.app.logger.warning(f"Handled error: {exc.error_code}")
+
+    return Response(
+        content={
+            "code": exc.error_code,
+            "data": exc.error_data
+        },
         status_code=status_code,
     )
 
@@ -36,6 +52,7 @@ app = Litestar(
     state=State({"context": Context()}),
     dependencies={"context": Provide(dep_context)},
     exception_handlers={
-        500: plain_text_exception_handler
+        500: server_exception_handler,
+        ApiException: api_exception_handler
     }
 )
