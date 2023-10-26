@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Optional
 from asyncio.queues import Queue
 from models import Event, Session
+from open_groceries import OpenGrocery
 import time
 
 @dataclass
@@ -19,11 +20,17 @@ class DatabaseOptions:
 class SecurityOptions:
     session_timeout: int
 
+@dataclass
+class StoreOptions:
+    stores: str
+    default_location: str
+
 
 @dataclass
 class ContextOptions:
     db: DatabaseOptions
     security: SecurityOptions
+    groceries: StoreOptions
 
 class Context:
     def __init__(self) -> None:
@@ -31,6 +38,8 @@ class Context:
         self.event_queue: Queue[Event] = Queue()
         self.client = MongoClient(host=self.options.db.host, port=self.options.db.port, authSource=self.options.db.database, username=self.options.db.user, password=self.options.db.password)
         self.database = self.client[self.options.db.database]
+        self.groceries = OpenGrocery(features=self.options.groceries.stores)
+        self.groceries.set_nearest_stores(near=self.options.groceries.default_location)
 
     def get_options(self) -> ContextOptions:
         load_dotenv()
@@ -44,6 +53,10 @@ class Context:
             ),
             security=SecurityOptions(
                 session_timeout=int(getenv("SESSION_TIMEOUT", "3600"))
+            ),
+            groceries=StoreOptions(
+                stores=getenv("STORES", "wegmans,costco").split(","),
+                default_location=getenv("DEFAULT_LOCATION", "Times Square NYC")
             )
         )
     
