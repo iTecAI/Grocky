@@ -3,3 +3,4 @@ pydantic
 open-groceries
 pymongo
 python-dotenv
+minio
