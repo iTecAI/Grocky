@@ -7,7 +7,8 @@ from asyncio.queues import Queue
 from models import Event, Session
 from open_groceries import OpenGrocery
 import time
-import os
+from minio import Minio
+import io
 
 
 @dataclass
@@ -32,7 +33,11 @@ class StoreOptions:
 
 @dataclass
 class StorageOptions:
-    path: str
+    host: str
+    access_key: str
+    secret_key: str
+    bucket_name: str
+    secure: bool
 
 
 @dataclass
@@ -57,9 +62,15 @@ class Context:
         self.database = self.client[self.options.db.database]
         self.groceries = OpenGrocery(features=self.options.groceries.stores)
         self.groceries.set_nearest_stores(near=self.options.groceries.default_location)
+        self.s3 = Minio(
+            self.options.storage.host,
+            access_key=self.options.storage.access_key,
+            secret_key=self.options.storage.secret_key,
+            secure=self.options.storage.secure
+        )
 
-        if not os.path.exists(self.options.storage.path):
-            os.makedirs(self.options.storage.path, exist_ok=True)
+        if not self.s3.bucket_exists(self.options.storage.bucket_name):
+            self.s3.make_bucket(self.options.storage.bucket_name)
 
     def get_options(self) -> ContextOptions:
         load_dotenv()
@@ -78,7 +89,13 @@ class Context:
                 stores=getenv("STORES", "wegmans,costco").split(","),
                 default_location=getenv("DEFAULT_LOCATION", "Times Square NYC"),
             ),
-            s3=StorageOptions(path=environ["ROOT_PATH"])
+            storage=StorageOptions(
+                host=environ["S3_HOST"],
+                access_key=environ["S3_ACCESS_KEY"],
+                secret_key=environ["S3_SECRET_KEY"],
+                bucket_name=getenv("S3_BUCKET", "s3-grocy"),
+                secure=getenv("S3_SECURE", "no") == "yes"
+            )
         )
 
     def check_session(self, session: Session) -> bool:
@@ -91,20 +108,18 @@ class Context:
 
     def store_object(
         self,
-        path: list[str],
-        data: bytes
+        object_name: str,
+        data: bytes,
+        mime: str = "application/octet-stream"
     ) -> None:
-        pstring = os.path.join(*path)
-        folder, fpath = os.path.split(pstring)
-        if len(folder) > 0 and not os.path.exists(os.path.join(self.options.storage.path, *folder)):
-            os.makedirs(os.path.join(self.options.storage.path, *folder), exist_ok=True)
-        with open(os.path.join(self.options.storage.path, *folder, fpath), "wb") as f:
-            f.write(data)
+        self.s3.put_object(self.bucket, object_name, io.BytesIO(data), len(data), content_type=mime)
 
     def get_object(
         self,
-        path: list[str]
+        object_name: str
     ) -> bytes:
-        pstring = os.path.join(self.options.storage.path, *path)
-        with open(pstring, "rb") as f:
-            return f.read()
+        return self.s3.get_object(self.bucket, object_name).data
+        
+    @property
+    def bucket(self) -> str:
+        return self.options.storage.bucket_name
