@@ -47,7 +47,8 @@ async def get_root() -> dict:
 app = Litestar(
     route_handlers=[
         get_root,
-        AuthController
+        AuthController,
+        StorageController
     ],
     state=State({"context": Context()}),
     dependencies={"context": Provide(dep_context)},

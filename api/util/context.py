@@ -2,12 +2,13 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from os import environ, getenv
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, Optional, Union
 from asyncio.queues import Queue
 from models import Event, Session
 from open_groceries import OpenGrocery
 import time
 from minio import Minio
+from minio.tagging import Tags
 import io
 
 
@@ -66,7 +67,7 @@ class Context:
             self.options.storage.host,
             access_key=self.options.storage.access_key,
             secret_key=self.options.storage.secret_key,
-            secure=self.options.storage.secure
+            secure=self.options.storage.secure,
         )
 
         if not self.s3.bucket_exists(self.options.storage.bucket_name):
@@ -94,8 +95,8 @@ class Context:
                 access_key=environ["S3_ACCESS_KEY"],
                 secret_key=environ["S3_SECRET_KEY"],
                 bucket_name=getenv("S3_BUCKET", "s3-grocy"),
-                secure=getenv("S3_SECURE", "no") == "yes"
-            )
+                secure=getenv("S3_SECURE", "no") == "yes",
+            ),
         )
 
     def check_session(self, session: Session) -> bool:
@@ -110,16 +111,31 @@ class Context:
         self,
         object_name: str,
         data: bytes,
-        mime: str = "application/octet-stream"
+        mime: str = "application/octet-stream",
+        tags: dict[str, Any] = {},
     ) -> None:
-        self.s3.put_object(self.bucket, object_name, io.BytesIO(data), len(data), content_type=mime)
+        self.s3.put_object(
+            self.bucket,
+            object_name,
+            io.BytesIO(data),
+            len(data),
+            content_type=mime,
+            tags=Tags(content_type=mime, for_object=True, **tags),
+        )
 
     def get_object(
-        self,
-        object_name: str
-    ) -> bytes:
-        return self.s3.get_object(self.bucket, object_name).data
+        self, object_name: str
+    ) -> tuple[bytes, str]:
+        obj = self.s3.get_object(self.bucket, object_name)
         
+        return obj.data, obj.info().get("Content-Type", "application/octet-stream")
+
+    def get_object_tags(self, object_name: str) -> Tags:
+        return self.s3.get_object_tags(self.bucket, object_name)
+
+    def delete_object(self, object_name: str) -> None:
+        self.s3.remove_object(self.bucket, object_name)
+
     @property
     def bucket(self) -> str:
         return self.options.storage.bucket_name
