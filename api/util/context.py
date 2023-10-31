@@ -5,12 +5,13 @@ from dataclasses import dataclass
 from typing import Any, Optional, Union
 from asyncio.queues import Queue
 from models.event import Event
-from models.session import Session
+from models.auth import Session
 from open_groceries import OpenGrocery
 import time
 from minio import Minio
 from minio.tagging import Tags
 import io
+from asyncio import Queue
 
 
 @dataclass
@@ -53,7 +54,6 @@ class ContextOptions:
 class Context:
     def __init__(self) -> None:
         self.options: ContextOptions = self.get_options()
-        self.event_queue: Queue[Event] = Queue()
         self.client = MongoClient(
             host=self.options.db.host,
             port=self.options.db.port,
@@ -74,7 +74,7 @@ class Context:
         if not self.s3.bucket_exists(self.options.storage.bucket_name):
             self.s3.make_bucket(self.options.storage.bucket_name)
 
-        #print(list(self.s3.list_objects(self.bucket)))
+        self.event_queues: dict[str, Queue[Event]] = {}
 
     def get_options(self) -> ContextOptions:
         load_dotenv()
@@ -141,3 +141,16 @@ class Context:
     @property
     def bucket(self) -> str:
         return self.options.storage.bucket_name
+    
+    def push_event(self, event: Event):
+        sessions = []
+        for target in event.targets:
+            if target["type"] == "session":
+                sessions.append(target["record"].id)
+            else:
+                sessions.extend([i.id for i in target["record"].sessions])
+        
+        for s in sessions:
+            if s in self.event_queues.keys():
+                self.event_queues[s].put_nowait(event)
+                    

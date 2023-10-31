@@ -1,8 +1,44 @@
+from dataclasses import dataclass
 from pymongo.database import Database
 from util.orm import Record
-from dataclasses import dataclass
+from typing import Optional
+import time
 from hashlib import pbkdf2_hmac, sha256
 from secrets import token_hex
+
+
+@dataclass
+class Session(Record):
+    collection_name = "sessions"
+    last_request: float
+    user: Optional[str]
+
+    @classmethod
+    def create(cls, database: Database) -> "Session":
+        new_session = Session(
+            id=cls._id(), database=database, last_request=time.time(), user=None
+        )
+        new_session.save()
+        return new_session
+
+    @property
+    def json(self) -> "SessionModel":
+        return SessionModel(
+            id=self.id,
+            last_request=self.last_request,
+            user=self.user_data.redacted if self.user else None,
+        )
+
+    @property
+    def user_data(self) -> "User":
+        return User.load_id(self.database, self.user) if self.user else None
+
+
+@dataclass
+class SessionModel:
+    id: str
+    last_request: float
+    user: Optional["User"]
 
 ITERS = 200000
 
@@ -47,6 +83,11 @@ class User(Record):
             display_name=self.display_name,
             profile_image=self.profile_image
         )
+    
+    @property
+    def sessions(self) -> list[Session]:
+        return Session.load_query(self.database, {"user": self.id})
+        
     
 @dataclass
 class UserCreationModel:

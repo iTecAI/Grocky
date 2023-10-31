@@ -32,6 +32,10 @@ export function useReady(): boolean {
     return useContext(ApiContext).ready;
 }
 
+export function useConnectionStatus(): boolean {
+    return useContext(ApiContext).connected;
+}
+
 export function useStorage(): {
     set: (scope: string, id: string, data: string) => Promise<string>;
     get: (scope: string, id: string) => Promise<string>;

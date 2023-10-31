@@ -2,10 +2,11 @@ from dataclasses import dataclass
 from typing_extensions import TypedDict
 from typing import Literal, Any
 from uuid import uuid4
+from util.orm import Record
 
 class EventTarget(TypedDict):
-    type: Literal["user", "session", "group"]
-    id: str
+    type: Literal["user", "session", "group", "list"]
+    record: Record
 
 class EventPacket(TypedDict):
     id: str

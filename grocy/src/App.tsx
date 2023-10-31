@@ -7,6 +7,7 @@ import { ApiProvider } from "./util/api";
 import { ModalsProvider } from "@mantine/modals";
 import { MODALS } from "./views/modals";
 import { Notifications } from "@mantine/notifications";
+import { EventProvider } from "./util/events";
 
 function App() {
     return (
@@ -17,13 +18,15 @@ function App() {
                 theme={themeDefault}
             >
                 <ApiProvider>
-                    <Notifications />
-                    <ModalsProvider
-                        modals={MODALS}
-                        modalProps={{ withCloseButton: true }}
-                    >
-                        <RouterProvider router={routes} />
-                    </ModalsProvider>
+                    <EventProvider>
+                        <Notifications />
+                        <ModalsProvider
+                            modals={MODALS}
+                            modalProps={{ withCloseButton: true }}
+                        >
+                            <RouterProvider router={routes} />
+                        </ModalsProvider>
+                    </EventProvider>
                 </ApiProvider>
             </MantineProvider>
         </TranslationProvider>

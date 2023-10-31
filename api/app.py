@@ -5,7 +5,8 @@ from util import Context, ApiException
 from controllers import *
 from litestar.status_codes import *
 from time import ctime
-
+from fastapi_utils.tasks import repeat_every
+from models import Event
 
 async def dep_context(state: State) -> Context:
     return state.context
@@ -39,10 +40,18 @@ def api_exception_handler(req: Request, exc: ApiException) -> Response:
     )
 
 @get("/")
-async def get_root() -> dict:
+async def get_root(context: Context) -> dict:
     return {
         "server_time": ctime()
     }
+
+context = Context()
+
+@repeat_every(seconds=30)
+async def keepalive_events():
+    global context
+    for e in context.event_queues.values():
+        e.put_nowait(Event.create("internal.keepalive", []))
 
 app = Litestar(
     route_handlers=[
@@ -50,12 +59,14 @@ app = Litestar(
         AuthController,
         StorageController,
         UserController,
-        GroupsController
+        GroupsController,
+        EventsController
     ],
-    state=State({"context": Context()}),
+    state=State({"context": context}),
     dependencies={"context": Provide(dep_context)},
     exception_handlers={
         500: server_exception_handler,
         ApiException: api_exception_handler
-    }
+    },
+    on_startup=[keepalive_events]
 )

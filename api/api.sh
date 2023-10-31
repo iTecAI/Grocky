@@ -1,0 +1,1 @@
+uvicorn --reload --timeout-graceful-shutdown 0 app:app

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from util.orm import Record
-from .user import User, RedactedUser
+from .auth import Session, User, RedactedUser
 from open_groceries import GroceryItem
 from typing import Literal, Union
 from typing_extensions import TypedDict
@@ -28,6 +28,10 @@ class Group(Record):
             self.database, {"owned_by.type": "group", "owned_by.id": self.id}
         )
         return results
+    
+    @property
+    def sessions(self) -> list[Session]:
+        return Session.load_query(self.database, {"user": {"$in": [i.id for i in self.users]}})
 
 
 class OwnerDescriptor(TypedDict):
@@ -119,6 +123,10 @@ class GrocyList(Record):
         if self.owned_by["type"] == "group":
             return Group.load_id(self.database, self.owned_by["id"])
         return User.load_id(self.database, self.owned_by["id"])
+    
+    @property
+    def sessions(self) -> list[Session]:
+        return Session.load_query(self.database, {"user": {"$in": [i.id for i in self.users]}})
 
     @property
     def items(self) -> list[Union[ListItem, GroceryListItem, TaskListItem]]:

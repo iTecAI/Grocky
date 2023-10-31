@@ -4,3 +4,4 @@ open-groceries
 pymongo
 python-dotenv
 minio
+fastapi-utils

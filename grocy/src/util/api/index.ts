@@ -7,6 +7,7 @@ import {
     useReady,
     useUser,
     useStorage,
+    useConnectionStatus,
 } from "./hooks";
 
 export {
@@ -17,5 +18,6 @@ export {
     useReady,
     useUser,
     useStorage,
+    useConnectionStatus,
 };
 export type { ApiResponse };
