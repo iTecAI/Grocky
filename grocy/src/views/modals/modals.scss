@@ -1,1 +1,23 @@
+.account-management-modal {
+    svg {
+        opacity: 0.6;
+    }
 
+    .dropzone-field {
+        white-space: nowrap;
+        position: relative;
+        .remove-pfp {
+            height: 218px;
+        }
+    }
+
+    .modal-actions-wrapper {
+        position: sticky;
+        bottom: 0px;
+        left: 0px;
+        display: inline-block;
+        width: 100%;
+        background-color: var(--mantine-color-body);
+        padding-top: 8px;
+    }
+}

@@ -48,7 +48,7 @@ export function useStorage(): {
                     body: {
                         data_url: data,
                         additional_tags: {},
-                        restrict: {},
+                        restrict: [],
                     },
                 },
             );

@@ -67,6 +67,33 @@ class UserApiMethods {
         }
         return result.code;
     }
+
+    public async updateSettings(
+        newSettings: Partial<User>,
+    ): Promise<User | string> {
+        const result = await this.request<User>("post", "/user/settings", {
+            body: newSettings,
+        });
+        if (result.success) {
+            this.context.setUser(result.data);
+            return result.data;
+        }
+        return result.code;
+    }
+
+    public async changePassword(fields: {
+        current: string;
+        new: string;
+    }): Promise<User | string> {
+        const result = await this.request<User>("post", "/user/password", {
+            body: fields,
+        });
+        if (result.success) {
+            this.context.setUser(result.data);
+            return result.data;
+        }
+        return result.code;
+    }
 }
 
 export class ApiMethods {

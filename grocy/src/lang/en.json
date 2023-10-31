@@ -1,123 +1,152 @@
 {
-  "common": {
-    "appName": "Grocy",
-    "notifications": {
-      "success": "Success!",
-      "warning": "Warning:",
-      "error": "Error!",
-      "info": "Info:"
-    }
-  },
-  "views": {
-    "layout": {
-      "login": "Log In",
-      "logout": "Log Out",
-      "menu": {
-        "settings": "Account Settings",
-        "logout": "Log Out"
-      }
-    },
-    "index": {
-      "title": {
-        "logoAlt": "App logo"
-      },
-      "features": {
-        "collab": "Collaboration",
-        "budgeting": "Budgeting",
-        "data": "Product Data"
-      },
-      "actions": {
-        "login": "Log In",
-        "createAccount": "Create Account"
-      }
-    },
-    "home": {
-      "items": {
-        "create": {
-          "list": "New List",
-          "group": "New Group"
-        }
-      }
-    }
-  },
-  "modals": {
-    "login": {
-      "title": "Login",
-      "fields": {
-        "username": {
-          "label": "Username",
-          "placeholder": "a_cool_username"
+    "common": {
+        "appName": "Grocy",
+        "notifications": {
+            "success": "Success!",
+            "warning": "Warning:",
+            "error": "Error!",
+            "info": "Info:"
         },
-        "password": {
-          "label": "Password",
-          "placeholder": "a_v3ry_s3cur3_passw0rd"
+        "actions": {
+            "cancel": "Cancel",
+            "save": "Save"
         }
-      },
-      "actions": {
-        "createAccount": "Create Account",
-        "login": "Login"
-      },
-      "success": "Logged in!"
     },
-    "createAccount": {
-      "fields": {
-        "username": {
-          "label": "Username",
-          "placeholder": "a_cool_username"
+    "views": {
+        "layout": {
+            "login": "Log In",
+            "logout": "Log Out",
+            "menu": {
+                "settings": "Account Settings",
+                "logout": "Log Out"
+            }
         },
-        "password": {
-          "label": "Password",
-          "placeholder": "a_v3ry_s3cur3_passw0rd"
+        "index": {
+            "title": {
+                "logoAlt": "App logo"
+            },
+            "features": {
+                "collab": "Collaboration",
+                "budgeting": "Budgeting",
+                "data": "Product Data"
+            },
+            "actions": {
+                "login": "Log In",
+                "createAccount": "Create Account"
+            }
         },
-        "passwordConfirm": {
-          "label": "Confirm Password"
+        "home": {
+            "items": {
+                "create": {
+                    "list": "New List",
+                    "group": "New Group"
+                }
+            }
         }
-      },
-      "actions": {
-        "createAccount": "Create",
-        "login": "Login"
-      },
-      "title": "Create Account",
-      "passwordStrength": {
-        "label": "Password Strength: {{strength}}",
-        "weak": "Weak",
-        "good": "Good",
-        "acceptable": "Acceptable",
-        "feedback": {
-          "calcTime": "Guess Time",
-          "feedback": "Feedback",
-          "good": "Great password!"
-        }
-      },
-      "success": "Account created successfully!"
     },
-    "manageAccount": {
-      "title": "Account Settings",
-      "fields": {
-        "display_name": "Display Name"
-      }
-    }
-  },
-  "errors": {
-    "ui": {
-      "common": {
-        "requiredField": "This field is required"
-      },
-      "account": {
-        "usernameLength": "Username must be at least 4 characters",
-        "passwordMatch": "Passwords must match",
-        "weakPassword": "Password too weak"
-      }
-    },
-    "api": {
-      "auth": {
-        "account": {
-          "creation": {
-            "exists": "Account already exists."
-          },
-          "invalid": "Incorrect username or password."
+    "modals": {
+        "login": {
+            "title": "Login",
+            "fields": {
+                "username": {
+                    "label": "Username",
+                    "placeholder": "a_cool_username"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "a_v3ry_s3cur3_passw0rd"
+                }
+            },
+            "actions": {
+                "createAccount": "Create Account",
+                "login": "Login"
+            },
+            "success": "Logged in!"
+        },
+        "createAccount": {
+            "fields": {
+                "username": {
+                    "label": "Username",
+                    "placeholder": "a_cool_username"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "a_v3ry_s3cur3_passw0rd"
+                },
+                "passwordConfirm": {
+                    "label": "Confirm Password"
+                }
+            },
+            "actions": {
+                "createAccount": "Create",
+                "login": "Login"
+            },
+            "title": "Create Account",
+            "passwordStrength": {
+                "label": "Password Strength: {{strength}}",
+                "weak": "Weak",
+                "good": "Good",
+                "acceptable": "Acceptable",
+                "feedback": {
+                    "calcTime": "Guess Time",
+                    "feedback": "Feedback",
+                    "good": "Great password!"
+                }
+            },
+            "success": "Account created successfully!"
+        },
+        "manageAccount": {
+            "title": "Account Settings",
+            "fields": {
+                "display_name": "Display Name",
+                "dropzone": {
+                    "title": "Upload Profile Image",
+                    "description": "Must be an image file",
+                    "preview": "Current Image",
+                    "clear": "Remove profile image"
+                },
+                "username": "Username",
+                "changePassword": {
+                    "title": "Change Password",
+                    "current": "Current Password",
+                    "new": "New Password",
+                    "confirm": "Confirm Password",
+                    "success": "Changed password!"
+                }
+            },
+            "success": "Updated settings!",
+            "errors": {
+                "image": "Failed to update profile image"
+            }
         }
-      }
+    },
+    "errors": {
+        "ui": {
+            "common": {
+                "requiredField": "This field is required"
+            },
+            "account": {
+                "usernameLength": "Username must be at least 4 characters",
+                "passwordMatch": "Passwords must match",
+                "weakPassword": "Password too weak"
+            }
+        },
+        "api": {
+            "auth": {
+                "account": {
+                    "creation": {
+                        "exists": "Account already exists."
+                    },
+                    "invalid": "Incorrect username or password."
+                }
+            },
+            "users": {
+                "self": {
+                    "password": {
+                        "invalid": "Incorrect password."
+                    }
+                }
+            }
+        }
     }
-  }
 }
