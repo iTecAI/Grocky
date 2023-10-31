@@ -1,7 +1,7 @@
 from pymongo.database import Database
 from util.orm import Record
 from dataclasses import dataclass
-from hashlib import pbkdf2_hmac
+from hashlib import pbkdf2_hmac, sha256
 from secrets import token_hex
 
 ITERS = 200000
@@ -11,6 +11,7 @@ class User(Record):
     collection_name = "users"
     username: str
     display_name: str
+    profile_image: str
     password_hash: str
     password_salt: str
 
@@ -27,6 +28,7 @@ class User(Record):
             database=database,
             username=username,
             display_name=username,
+            profile_image=f"https://gravatar.com/avatar/{sha256(username.strip().encode()).hexdigest()}?d=retro",
             password_hash=key,
             password_salt=salt
         )
@@ -42,7 +44,8 @@ class User(Record):
         return RedactedUser(
             id=self.id,
             username=self.username,
-            display_name=self.display_name
+            display_name=self.display_name,
+            profile_image=self.profile_image
         )
     
 @dataclass
@@ -55,3 +58,4 @@ class RedactedUser:
     id: str
     username: str
     display_name: str
+    profile_image: str

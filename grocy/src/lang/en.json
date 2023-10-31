@@ -11,7 +11,11 @@
   "views": {
     "layout": {
       "login": "Log In",
-      "logout": "Log Out"
+      "logout": "Log Out",
+      "menu": {
+        "settings": "Account Settings",
+        "logout": "Log Out"
+      }
     },
     "index": {
       "title": {
@@ -86,6 +90,12 @@
         }
       },
       "success": "Account created successfully!"
+    },
+    "manageAccount": {
+      "title": "Account Settings",
+      "fields": {
+        "display_name": "Display Name"
+      }
     }
   },
   "errors": {

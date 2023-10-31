@@ -120,7 +120,6 @@ class Context:
             io.BytesIO(data),
             len(data),
             content_type=mime,
-            tags=Tags(content_type=mime, for_object=True, **tags),
         )
 
     def get_object(

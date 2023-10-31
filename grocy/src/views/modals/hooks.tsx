@@ -2,7 +2,7 @@ import { Group } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { MdCreate, MdLogin } from "react-icons/md";
+import { MdCreate, MdLogin, MdSettings } from "react-icons/md";
 import { MODALS } from "./util";
 
 export function useModals(): {
@@ -30,6 +30,17 @@ export function useModals(): {
                         <Group className="modal-title" justify="space-between">
                             <MdCreate size="1.2em" />
                             {t("modals.createAccount.title")}
+                        </Group>
+                    ),
+                    innerProps: {},
+                }),
+            manageAccount: () =>
+                modals.openContextModal({
+                    modal: "manageAccount",
+                    title: (
+                        <Group className="modal-title" justify="space-between">
+                            <MdSettings size="1.2em" />
+                            {t("modals.manageAccount.title")}
                         </Group>
                     ),
                     innerProps: {},

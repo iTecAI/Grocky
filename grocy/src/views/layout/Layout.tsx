@@ -1,18 +1,57 @@
-import { AppShell, Avatar, Box, Button, Group } from "@mantine/core";
+import {
+    AppShell,
+    Avatar,
+    Box,
+    Button,
+    Group,
+    Menu,
+    MenuDropdown,
+    MenuItem,
+    MenuTarget,
+} from "@mantine/core";
 import AppIcon from "../../assets/icon.svg";
 import "./layout.scss";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import { useEnvironment } from "../../util/hooks";
-import { MdLogin, MdLogout } from "react-icons/md";
+import { MdLogin, MdLogout, MdSettings } from "react-icons/md";
 import { useModals } from "../modals";
 import { useApi, useUser } from "../../util/api";
+
+function UserMenu() {
+    const [user] = useUser();
+    const { auth } = useApi();
+    const { t } = useTranslation();
+    const { manageAccount } = useModals();
+    return user ? (
+        <Menu shadow="md" position="bottom-end" offset={12}>
+            <MenuTarget>
+                <Avatar src={user.profile_image} className="user-menu-target" />
+            </MenuTarget>
+            <MenuDropdown>
+                <MenuItem
+                    leftSection={<MdSettings size="1.3em" />}
+                    onClick={() => manageAccount()}
+                >
+                    {t("views.layout.menu.settings")}
+                </MenuItem>
+                <MenuItem
+                    leftSection={<MdLogout size="1.3em" />}
+                    onClick={() => auth.logout()}
+                >
+                    {t("views.layout.menu.logout")}
+                </MenuItem>
+            </MenuDropdown>
+        </Menu>
+    ) : (
+        <></>
+    );
+}
 
 export function Layout() {
     const { t } = useTranslation();
     const { height } = useEnvironment();
     const { login } = useModals();
-    const { auth } = useApi();
     const [user] = useUser();
 
     return (
@@ -25,18 +64,7 @@ export function Layout() {
                     </Group>
                     <Group gap="md" className="right">
                         {user ? (
-                            <Button
-                                className="btn-logout"
-                                size={
-                                    height === "desktop" ? "md" : "compact-md"
-                                }
-                                variant="light"
-                                leftSection={<MdLogout size={"1.3em"} />}
-                                justify="space-between"
-                                onClick={() => auth.logout()}
-                            >
-                                {t("views.layout.logout")}
-                            </Button>
+                            <UserMenu />
                         ) : (
                             <Button
                                 className="btn-login"

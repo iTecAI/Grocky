@@ -48,7 +48,8 @@ app = Litestar(
     route_handlers=[
         get_root,
         AuthController,
-        StorageController
+        StorageController,
+        UserController
     ],
     state=State({"context": Context()}),
     dependencies={"context": Provide(dep_context)},

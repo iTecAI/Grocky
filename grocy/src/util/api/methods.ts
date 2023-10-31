@@ -54,12 +54,29 @@ class AuthApiMethods {
     }
 }
 
+class UserApiMethods {
+    constructor(
+        private context: ApiContextType,
+        private request: RequestFunction,
+    ) {}
+
+    public async self(): Promise<User | string> {
+        const result = await this.request<User>("get", "/user");
+        if (result.success) {
+            return result.data;
+        }
+        return result.code;
+    }
+}
+
 export class ApiMethods {
     public auth: AuthApiMethods;
+    public user: UserApiMethods;
     constructor(
         private context: ApiContextType,
         private request: RequestFunction,
     ) {
         this.auth = new AuthApiMethods(this.context, this.request);
+        this.user = new UserApiMethods(this.context, this.request);
     }
 }
