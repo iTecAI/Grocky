@@ -45,6 +45,17 @@ export function useModals(): {
                     ),
                     innerProps: {},
                 }),
+            createGroup: () =>
+                modals.openContextModal({
+                    modal: "createGroup",
+                    title: (
+                        <Group className="modal-title" justify="space-between">
+                            <MdCreate size="1.2em" />
+                            {t("modals.createGroup.title")}
+                        </Group>
+                    ),
+                    innerProps: {},
+                }),
         }),
         [],
     );

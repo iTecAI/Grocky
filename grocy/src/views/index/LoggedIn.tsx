@@ -1,9 +1,11 @@
 import { Box, Card, SimpleGrid, Text } from "@mantine/core";
 import { MdGroupAdd, MdList } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+import { useModals } from "../modals";
 
 export function IndexLoggedIn() {
     const { t } = useTranslation();
+    const { createGroup } = useModals();
     return (
         <SimpleGrid
             className="index-main"
@@ -21,7 +23,10 @@ export function IndexLoggedIn() {
                         {t("views.home.items.create.list")}
                     </Text>
                 </Box>
-                <Box className="creation-button group">
+                <Box
+                    className="creation-button group"
+                    onClick={() => createGroup()}
+                >
                     <MdGroupAdd size="1.5em" />
                     <Text className="button-title">
                         {t("views.home.items.create.group")}

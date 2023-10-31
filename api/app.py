@@ -49,7 +49,8 @@ app = Litestar(
         get_root,
         AuthController,
         StorageController,
-        UserController
+        UserController,
+        GroupsController
     ],
     state=State({"context": Context()}),
     dependencies={"context": Provide(dep_context)},

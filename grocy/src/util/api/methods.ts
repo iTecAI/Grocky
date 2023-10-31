@@ -1,4 +1,5 @@
 import { User } from "../../types/auth";
+import { GroupType } from "../../types/group";
 import { RequestFunction, ApiContextType } from "./types";
 
 class AuthApiMethods {
@@ -94,16 +95,66 @@ class UserApiMethods {
         }
         return result.code;
     }
+
+    public async searchUsers(query: string): Promise<User[]> {
+        const result = await this.request<User[]>("get", "/user/search", {
+            params: {
+                q: query,
+            },
+        });
+        if (result.success) {
+            return result.data;
+        }
+        return [];
+    }
+}
+
+class GroupApiMethods {
+    constructor(
+        private context: ApiContextType,
+        private request: RequestFunction,
+    ) {}
+
+    public async create(data: {
+        name: string;
+        description: string;
+        members: User[];
+    }): Promise<GroupType | string> {
+        const body = {
+            name: data.name,
+            desc: data.description,
+            members: data.members.map((m) => m.id),
+        };
+        const result = await this.request<GroupType>("post", "/groups/", {
+            body,
+        });
+
+        if (result.success) {
+            return result.data;
+        }
+        return result.code;
+    }
+
+    public async get_groups(): Promise<GroupType[]> {
+        const result = await this.request<GroupType[]>("get", "/groups/");
+        if (result.success) {
+            return result.data;
+        } else {
+            return [];
+        }
+    }
 }
 
 export class ApiMethods {
     public auth: AuthApiMethods;
     public user: UserApiMethods;
+    public groups: GroupApiMethods;
     constructor(
         private context: ApiContextType,
         private request: RequestFunction,
     ) {
         this.auth = new AuthApiMethods(this.context, this.request);
         this.user = new UserApiMethods(this.context, this.request);
+        this.groups = new GroupApiMethods(this.context, this.request);
     }
 }

@@ -4,7 +4,8 @@ from os import environ, getenv
 from dataclasses import dataclass
 from typing import Any, Optional, Union
 from asyncio.queues import Queue
-from models import Event, Session
+from models.event import Event
+from models.session import Session
 from open_groceries import OpenGrocery
 import time
 from minio import Minio
@@ -73,7 +74,7 @@ class Context:
         if not self.s3.bucket_exists(self.options.storage.bucket_name):
             self.s3.make_bucket(self.options.storage.bucket_name)
 
-        print(list(self.s3.list_objects(self.bucket)))
+        #print(list(self.s3.list_objects(self.bucket)))
 
     def get_options(self) -> ContextOptions:
         load_dotenv()
