@@ -31,3 +31,54 @@ export function useUser(): [User | null, (user: User | null) => void] {
 export function useReady(): boolean {
     return useContext(ApiContext).ready;
 }
+
+export function useStorage(): {
+    set: (scope: string, id: string, data: string) => Promise<string>;
+    get: (scope: string, id: string) => Promise<string>;
+    delete: (scope: string, id: string) => Promise<null>;
+} {
+    const request = useRequest();
+
+    return {
+        set: async (scope: string, id: string, data: string) => {
+            const response = await request<{ path: string }>(
+                "post",
+                `/storage/${scope}/${id}`,
+                {
+                    body: {
+                        data_url: data,
+                        additional_tags: {},
+                        restrict: {},
+                    },
+                },
+            );
+
+            if (response.success) {
+                return response.data.path;
+            } else {
+                throw Error(response.code);
+            }
+        },
+        get: async (scope, id) => {
+            const response = await fetch(`/api/storage/${scope}/${id}`);
+            if (response.ok && response.body) {
+                const blob = await response.blob();
+                return URL.createObjectURL(blob);
+            } else {
+                throw Error(response.status.toString());
+            }
+        },
+        delete: async (scope, id) => {
+            const response = await request<{ path: string }>(
+                "delete",
+                `/storage/${scope}/${id}`,
+            );
+
+            if (response.success) {
+                return null;
+            } else {
+                throw Error(response.code);
+            }
+        },
+    };
+}
