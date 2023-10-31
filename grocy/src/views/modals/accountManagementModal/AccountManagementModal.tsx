@@ -31,7 +31,7 @@ export function AccountManagementModal({
         user.self().then((value) =>
             isString(value) ? context.closeModal(id) : setUserData(value),
         );
-    });
+    }, []);
 
     return userData ? (
         <Stack gap="sm" className="account-management-modal modal" p="sm">
