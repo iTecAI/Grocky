@@ -82,8 +82,8 @@ class Context:
             db=DatabaseOptions(
                 host=environ["MONGO_HOST"],
                 port=int(getenv("MONGO_PORT", "27017")),
-                database=getenv("MONGO_DATABASE", "grocy"),
-                user=getenv("MONGO_USER", "grocy"),
+                database=getenv("MONGO_DATABASE", "grocky"),
+                user=getenv("MONGO_USER", "grocky"),
                 password=getenv("MONGO_PASSWORD"),
             ),
             security=SecurityOptions(
@@ -97,7 +97,7 @@ class Context:
                 host=environ["S3_HOST"],
                 access_key=environ["S3_ACCESS_KEY"],
                 secret_key=environ["S3_SECRET_KEY"],
-                bucket_name=getenv("S3_BUCKET", "s3-grocy"),
+                bucket_name=getenv("S3_BUCKET", "s3-grocky"),
                 secure=getenv("S3_SECURE", "no") == "yes",
             ),
         )

@@ -22,8 +22,8 @@ class Group(Record):
         return results
 
     @property
-    def lists(self) -> list["GrocyList"]:
-        results: list[GrocyList] = GrocyList.load_query(
+    def lists(self) -> list["GrockyList"]:
+        results: list[GrockyList] = GrockyList.load_query(
             self.database, {"owned_by.type": "group", "owned_by.id": self.id}
         )
         return results
@@ -110,7 +110,7 @@ class TaskListItem(ListItem):
 
 
 @dataclass
-class GrocyList(Record):
+class GrockyList(Record):
     collection_name = "lists"
     name: str
     description: str

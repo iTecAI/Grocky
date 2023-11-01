@@ -4,7 +4,7 @@ from litestar.params import Parameter
 from litestar.status_codes import *
 from litestar.di import Provide
 from util import Context, ApiException, guard_session, guard_logged_in, depends_user
-from models import User, Group, RedactedUser, GrocyList
+from models import User, Group, RedactedUser, GrockyList
 from typing import Annotated, Optional
 import time
 from dataclasses import dataclass
@@ -62,5 +62,5 @@ class GroupsController(Controller):
         return [u.redacted for u in group.users]
     
     @get("/{id:str}/lists", dependencies={"group": Provide(depends_group)})
-    async def get_group_lists(self, group: Group) -> list[GrocyList]:
+    async def get_group_lists(self, group: Group) -> list[GrockyList]:
         return group.lists

@@ -34,7 +34,7 @@ const GroupCard = memo(({ group }: { group: GroupType }) => {
     }, [group.id]);
 
     return (
-        <Card className="grocy-item group" withBorder>
+        <Card className="grocky-item group" withBorder>
             <Stack gap="sm" className="item-layout">
                 <Group gap="sm" justify="space-between">
                     <MdGroup
@@ -140,7 +140,7 @@ export function IndexLoggedIn() {
                             <></>
                         ),
                     )}
-                <Card className="grocy-item create" withBorder>
+                <Card className="grocky-item create" withBorder>
                     <Box
                         className="creation-button list"
                         onClick={() =>

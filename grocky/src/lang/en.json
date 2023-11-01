@@ -1,20 +1,20 @@
 {
   "common": {
-    "appName": "Grocy",
-    "notifications": {
-      "success": "Success!",
-      "warning": "Warning:",
-      "error": "Error!",
-      "info": "Info:"
-    },
-    "actions": {
-      "cancel": "Cancel",
-      "save": "Save",
-      "submit": "Submit"
-    },
-    "feedback": {
-      "noResults": "No Results"
-    }
+      "appName": "Grocky",
+      "notifications": {
+          "success": "Success!",
+          "warning": "Warning:",
+          "error": "Error!",
+          "info": "Info:"
+      },
+      "actions": {
+          "cancel": "Cancel",
+          "save": "Save",
+          "submit": "Submit"
+      },
+      "feedback": {
+          "noResults": "No Results"
+      }
   },
   "views": {
     "layout": {

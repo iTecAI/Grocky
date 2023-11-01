@@ -1,2 +1,2 @@
-# Grocy
+# Grocky
 Collaborative shopping list app
