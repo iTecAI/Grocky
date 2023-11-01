@@ -86,7 +86,7 @@ const GroupCard = memo(({ group }: { group: GroupType }) => {
 
 export function IndexLoggedIn() {
     const { t } = useTranslation();
-    const { createGroup } = useModals();
+    const { createGroup, createList } = useModals();
     const [search, setSearch] = useState("");
     const { groups } = useApi();
     const loadItems = useCallback(async () => {
@@ -107,6 +107,8 @@ export function IndexLoggedIn() {
     useEffect(() => {
         loadItems().then(setUserItems);
     }, []);
+
+    const [user] = useUser();
 
     return (
         <Stack gap="sm">
@@ -139,7 +141,15 @@ export function IndexLoggedIn() {
                         ),
                     )}
                 <Card className="grocy-item create" withBorder>
-                    <Box className="creation-button list">
+                    <Box
+                        className="creation-button list"
+                        onClick={() =>
+                            createList({
+                                ownerType: "user",
+                                ownerId: user?.id ?? "",
+                            })
+                        }
+                    >
                         <MdList size="1.5em" />
                         <Text className="button-title">
                             {t("views.home.items.create.list")}

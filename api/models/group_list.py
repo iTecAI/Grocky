@@ -116,6 +116,7 @@ class GrocyList(Record):
     description: str
     owned_by: OwnerDescriptor
     type: Literal["grocery", "task", "general"]
+    options: dict
 
     @property
     def owner(self) -> Union[Group, User]:

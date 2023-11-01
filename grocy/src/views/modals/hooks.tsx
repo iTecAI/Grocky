@@ -56,6 +56,20 @@ export function useModals(): {
                     ),
                     innerProps: {},
                 }),
+            createList: (options: {
+                ownerType: "user" | "group";
+                ownerId: string;
+            }) =>
+                modals.openContextModal({
+                    modal: "createList",
+                    title: (
+                        <Group className="modal-title" justify="space-between">
+                            <MdCreate size="1.2em" />
+                            {t("modals.createList.title")}
+                        </Group>
+                    ),
+                    innerProps: options,
+                }),
         }),
         [],
     );

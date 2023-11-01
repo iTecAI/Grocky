@@ -139,15 +139,43 @@
       "title": "New Group",
       "fields": {
         "name": {
-          "label": "Group Name",
+          "label": "Name",
           "placeholder": "New Group"
         },
         "desc": {
-          "label": "Group Description",
+          "label": "Description",
           "placeholder": "A very cool group"
         },
         "members": {
           "label": "Add Members"
+        }
+      }
+    },
+    "createList": {
+      "title": "New List",
+      "fields": {
+        "desc": {
+          "label": "Description",
+          "placeholder": "A list for my thingies"
+        },
+        "name": {
+          "label": "Name",
+          "placeholder": "New List"
+        },
+        "type": {
+          "labels": {
+            "general": "General",
+            "task": "Tasks",
+            "grocery": "Groceries"
+          }
+        },
+        "options": {
+          "label": "Options",
+          "grocery": {
+            "selectStore": {
+              "label": "Include Stores"
+            }
+          }
         }
       }
     }

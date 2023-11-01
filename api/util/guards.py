@@ -16,6 +16,8 @@ def guard_session(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     if not valid:
         raise ApiException(error_code="auth.session.invalid", status_code=HTTP_401_UNAUTHORIZED)
     
+    result.save()
+    
 def guard_logged_in(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     context: Context = connection.app.state.context
     token = connection.headers.get("Authorization")
