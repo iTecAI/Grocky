@@ -9,7 +9,7 @@ import {
     MenuItem,
     MenuTarget,
 } from "@mantine/core";
-import AppIcon from "../../assets/icon.svg";
+import AppIcon from "../../assets/icon.png";
 import "./layout.scss";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";

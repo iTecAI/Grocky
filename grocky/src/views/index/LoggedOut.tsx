@@ -9,7 +9,7 @@ import {
 } from "react-icons/md";
 import { useModals } from "../modals";
 import { useTranslation } from "react-i18next";
-import AppIcon from "../../assets/icon.svg";
+import AppIcon from "../../assets/icon.png";
 
 function IndexItem({
     name,
