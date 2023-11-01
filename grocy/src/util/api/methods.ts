@@ -1,5 +1,6 @@
 import { User } from "../../types/auth";
 import { GroupType } from "../../types/group";
+import { ListType } from "../../types/list";
 import { RequestFunction, ApiContextType } from "./types";
 
 class AuthApiMethods {
@@ -137,6 +138,27 @@ class GroupApiMethods {
 
     public async get_groups(): Promise<GroupType[]> {
         const result = await this.request<GroupType[]>("get", "/groups/");
+        if (result.success) {
+            return result.data;
+        } else {
+            return [];
+        }
+    }
+
+    public async get_group_users(id: string): Promise<User[]> {
+        const result = await this.request<User[]>("get", `/groups/${id}/users`);
+        if (result.success) {
+            return result.data;
+        } else {
+            return [];
+        }
+    }
+
+    public async get_group_lists(id: string): Promise<ListType[]> {
+        const result = await this.request<ListType[]>(
+            "get",
+            `/groups/${id}/lists`,
+        );
         if (result.success) {
             return result.data;
         } else {

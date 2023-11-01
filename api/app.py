@@ -1,10 +1,13 @@
 from litestar import Litestar, Request, Response, get
 from litestar.datastructures import State
 from litestar.di import Provide
-from util import Context, ApiException
+from util import Context, ApiException, EndpointFilter
 from controllers import *
 from litestar.status_codes import *
 from time import ctime
+import logging
+
+logging.getLogger("uvicorn.access").addFilter(EndpointFilter(["/"]))
 
 async def dep_context(state: State) -> Context:
     return state.context

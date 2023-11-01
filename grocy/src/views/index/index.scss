@@ -83,5 +83,31 @@
                 }
             }
         }
+
+        &:not(.create) {
+            transition: background-color 0.1s;
+            cursor: pointer;
+
+            &:hover {
+                background-color: var(--mantine-color-default-hover);
+            }
+        }
+
+
+        .item-layout {
+            height: 100%;
+            .item-title {
+                max-width: calc(100% - 1.8em - 10px);
+                overflow-x: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .item-desc {
+                flex-grow: 2;
+                overflow-y: auto;
+            }
+        }
+        
     }
 }

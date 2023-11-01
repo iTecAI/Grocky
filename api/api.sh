@@ -1,1 +1,1 @@
-uvicorn --reload --timeout-graceful-shutdown 0 --no-access-log app:app
+uvicorn --reload --timeout-graceful-shutdown 0 app:app

@@ -1,11 +1,10 @@
 from dataclasses import dataclass
 from util.orm import Record
-from .auth import Session, User, RedactedUser
+from .auth import Session, User
 from open_groceries import GroceryItem
 from typing import Literal, Union
 from typing_extensions import TypedDict
 from time import time
-
 
 @dataclass
 class Group(Record):
@@ -16,11 +15,11 @@ class Group(Record):
     members: list[str]
 
     @property
-    def users(self) -> list[RedactedUser]:
+    def users(self) -> list[User]:
         results: list[User] = User.load_query(
             self.database, {"$or": [{"id": {"$in": self.members}}, {"id": self.owner}]}
         )
-        return [u.redacted for u in results]
+        return results
 
     @property
     def lists(self) -> list["GrocyList"]:

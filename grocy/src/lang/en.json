@@ -44,6 +44,18 @@
         "create": {
           "list": "New List",
           "group": "New Group"
+        },
+        "group": {
+          "no_description": "No description provided",
+          "users": "Members",
+          "lists": "Lists"
+        }
+      },
+      "actions": {
+        "search": "Search",
+        "display": {
+          "lists": "Show Lists",
+          "groups": "Show Groups"
         }
       }
     }
