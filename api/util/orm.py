@@ -3,7 +3,6 @@ from typing import ClassVar, Union, Any
 from pymongo.collection import Collection
 from pymongo.database import Database
 from uuid import uuid4
-from .context import Context
 
 @dataclass
 class Record:
@@ -52,5 +51,5 @@ class Record:
     def destroy(self):
         self.collection.delete_one({"id": self.id})
 
-    def notify(self, context: Context, event_subtype: str, data: dict):
+    def notify(self, context, event_subtype: str, data: dict):
         raise NotImplementedError()

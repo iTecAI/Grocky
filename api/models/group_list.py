@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from api.util.context import Context
 from util.orm import Record
 from .auth import Session, User
 from open_groceries import GroceryItem
@@ -36,7 +35,7 @@ class Group(Record):
             self.database, {"user": {"$in": [i.id for i in self.users]}}
         )
 
-    def notify(self, context: Context, event_subtype: str, data: dict):
+    def notify(self, context, event_subtype: str, data: dict):
         context.post_event(
             [i.id for i in self.sessions], f"group.{event_subtype}", event_data=data
         )
@@ -153,7 +152,7 @@ class GrockyList(Record):
                     self.database, {"list_id": self.id, "parent_id": None}
                 )
 
-    def notify(self, context: Context, event_subtype: str, data: dict):
+    def notify(self, context, event_subtype: str, data: dict):
         context.post_event(
             [i.id for i in self.sessions], f"list.{event_subtype}", event_data=data
         )
