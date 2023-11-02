@@ -3,13 +3,15 @@ from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.channels import ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
-from util import Context, ApiException, EndpointFilter
+from litestar.config.cors import CORSConfig
+from util import Context, ApiException, EndpointFilter, ErrorFilter
 from controllers import *
 from litestar.status_codes import *
 from time import ctime
 import logging
 
 logging.getLogger("uvicorn.access").addFilter(EndpointFilter(["/"]))
+logging.getLogger("uvicorn.error").addFilter(ErrorFilter())
 
 async def dep_context(state: State) -> Context:
     return state.context
@@ -42,8 +44,23 @@ def api_exception_handler(req: Request, exc: ApiException) -> Response:
         status_code=status_code,
     )
 
+def ws_exception_handler(req: Request, exc: Exception) -> Response:
+    """Default handler for exceptions subclassed from HTTPException."""
+    status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
+    detail = getattr(exc, "detail", "")
+
+    return Response(
+        content={
+            "code": "error.server.unspecified",
+            "data": {
+                "detail": detail
+            }
+        },
+        status_code=status_code,
+    )
+
 @get("/")
-async def get_root(context: Context) -> dict:
+async def get_root() -> dict:
     return {
         "server_time": ctime()
     }
@@ -51,7 +68,8 @@ async def get_root(context: Context) -> dict:
 channels_plugin = ChannelsPlugin(
     backend=MemoryChannelsBackend(),
     arbitrary_channels_allowed=True,
-    ws_handler_base_path="/events"
+    ws_handler_base_path="/events",
+    create_ws_route_handlers=True
 )
 
 context = Context(channels_plugin)
@@ -70,5 +88,6 @@ app = Litestar(
         500: server_exception_handler,
         ApiException: api_exception_handler
     },
-    plugins=[channels_plugin]
+    plugins=[channels_plugin],
+    cors_config=CORSConfig(allow_origins=["*"])
 )

@@ -40,6 +40,7 @@ class GroupsController(Controller):
             members=data.members,
         )
         new_group.save()
+        new_group.notify(context, "update", data={"reason": "group_creation"});
         return new_group.json
 
     @get("/")

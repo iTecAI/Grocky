@@ -102,7 +102,7 @@ export function IndexLoggedIn() {
         [],
     );
 
-    useServerEvent("groups.list_update", groupsListener);
+    useServerEvent("group.update", groupsListener);
 
     useEffect(() => {
         loadItems().then(setUserItems);

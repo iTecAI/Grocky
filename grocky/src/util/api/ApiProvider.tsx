@@ -10,51 +10,34 @@ export function ApiProvider({
     const [session, setSession] = useState<Session | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [ready, setReady] = useState<boolean>(false);
-    const [connected, setConnected] = useState(true);
 
     useEffect(() => {
-        if (connected) {
-            fetch("/api/auth/session", {
-                method: "GET",
-                headers: localStorage.getItem("token")
-                    ? {
-                          Authorization: localStorage.getItem(
-                              "token",
-                          ) as string,
-                      }
-                    : undefined,
-            }).then((result) => {
-                if (result.status === 200) {
-                    result
-                        .json()
-                        .then((data) => {
-                            setSession(data);
-                            localStorage.setItem("token", data.id);
-                            if (data.user) {
-                                setUser(data.user);
-                            }
-                            setReady(true);
-                        })
-                        .catch((reason) =>
-                            console.error("JSON parse error: ", reason),
-                        );
-                } else {
-                    console.error("Failed to retrieve session.");
-                }
-            });
-        }
-    }, [connected]);
-
-    useEffect(() => {
-        const id = setInterval(
-            () =>
-                fetch("/api").then((result) =>
-                    result.ok ? setConnected(true) : setConnected(false),
-                ),
-            10000,
-        );
-
-        return () => clearInterval(id);
+        fetch("/api/auth/session", {
+            method: "GET",
+            headers: localStorage.getItem("token")
+                ? {
+                      Authorization: localStorage.getItem("token") as string,
+                  }
+                : undefined,
+        }).then((result) => {
+            if (result.status === 200) {
+                result
+                    .json()
+                    .then((data) => {
+                        setSession(data);
+                        localStorage.setItem("token", data.id);
+                        if (data.user) {
+                            setUser(data.user);
+                        }
+                        setReady(true);
+                    })
+                    .catch((reason) =>
+                        console.error("JSON parse error: ", reason),
+                    );
+            } else {
+                console.error("Failed to retrieve session.");
+            }
+        });
     }, []);
 
     const request = useCallback(
@@ -126,9 +109,7 @@ export function ApiProvider({
     );
 
     return (
-        <ApiContext.Provider
-            value={{ session, request, user, setUser, ready, connected }}
-        >
+        <ApiContext.Provider value={{ session, request, user, setUser, ready }}>
             {children}
         </ApiContext.Provider>
     );
