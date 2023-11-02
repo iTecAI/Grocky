@@ -1,6 +1,6 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { EventContext } from "./util";
-import { useConnectionStatus, useReady } from "../api";
+import { useSession } from "../api";
 
 export function EventProvider({
     children,
@@ -15,66 +15,38 @@ export function EventProvider({
         }[]
     >([]);
 
-    const ready = useReady();
-    const connected = useConnectionStatus();
+    const session = useSession();
+    const emit = useCallback(
+        (event: string, data: any) =>
+            listeners
+                .filter((l) => l.event === event)
+                .map((l) => l.handler(event, data)),
+        [listeners],
+    );
 
     useEffect(() => {
-        const controller = new AbortController();
+        if (session) {
+            const socket = new WebSocket(
+                `${location.protocol === "http:" ? "ws" : "wss"}://${
+                    location.host
+                }/api/events/ws.${session.id}`,
+            );
+            socket.addEventListener(
+                "message",
+                (event: MessageEvent<string>) => {
+                    const parsed = JSON.parse(event.data);
+                    emit("server:" + parsed.event, parsed.data);
+                },
+            );
 
-        async function runFetch() {
-            while (!controller.signal.aborted) {
-                try {
-                    const result = await fetch("/api/events/", {
-                        signal: controller.signal,
-                        headers: {
-                            Authorization: localStorage.getItem("token") ?? "",
-                        },
-                    });
-                    if (result.ok && result.body) {
-                        const reader = result.body.getReader();
-                        while (true) {
-                            const { done, value } = await reader.read();
-                            const data = JSON.parse(
-                                new TextDecoder().decode(value),
-                            );
-
-                            listeners
-                                .filter(
-                                    (l) => l.event === "server:" + data.type,
-                                )
-                                .map((l) =>
-                                    l.handler("server:" + data.type, data.data),
-                                );
-
-                            if (done || controller.signal.aborted) {
-                                break;
-                            }
-                        }
-                    } else {
-                        break;
-                    }
-                } catch {
-                    return;
-                }
-            }
+            return () => socket.close(1000, "sessionUpdate");
         }
-
-        if (ready && localStorage.getItem("token") && connected) {
-            runFetch();
-        }
-
-        return () => {
-            controller.abort();
-        };
-    }, [ready, listeners, connected]);
+    }, [session, emit]);
 
     return (
         <EventContext.Provider
             value={{
-                emit: (event, data) =>
-                    listeners
-                        .filter((l) => l.event === event)
-                        .map((l) => l.handler(event, data)),
+                emit,
                 listen: (event, handler, id) =>
                     setListeners((current) => [
                         ...current,

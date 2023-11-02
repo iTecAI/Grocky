@@ -25,7 +25,6 @@ export type ApiContextType = {
     user: User | null;
     setUser: (user: User | null) => void;
     ready: boolean;
-    connected: boolean;
 };
 
 export const ApiContext = createContext<ApiContextType>({
@@ -38,5 +37,4 @@ export const ApiContext = createContext<ApiContextType>({
     user: null,
     setUser: () => {},
     ready: false,
-    connected: false,
 });

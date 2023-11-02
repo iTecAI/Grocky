@@ -6,6 +6,7 @@ from typing import Literal, Union
 from typing_extensions import TypedDict
 from time import time
 
+
 @dataclass
 class Group(Record):
     collection_name = "groups"
@@ -27,10 +28,17 @@ class Group(Record):
             self.database, {"owned_by.type": "group", "owned_by.id": self.id}
         )
         return results
-    
+
     @property
     def sessions(self) -> list[Session]:
-        return Session.load_query(self.database, {"user": {"$in": [i.id for i in self.users]}})
+        return Session.load_query(
+            self.database, {"user": {"$in": [i.id for i in self.users]}}
+        )
+
+    def notify(self, context, event_subtype: str, data: dict):
+        context.post_event(
+            [i.id for i in self.sessions], f"group.{event_subtype}", event_data=data
+        )
 
 
 class OwnerDescriptor(TypedDict):
@@ -123,10 +131,10 @@ class GrockyList(Record):
         if self.owned_by["type"] == "group":
             return Group.load_id(self.database, self.owned_by["id"])
         return User.load_id(self.database, self.owned_by["id"])
-    
+
     @property
     def sessions(self) -> list[Session]:
-        return Session.load_query(self.database, {"user": {"$in": [i.id for i in self.users]}})
+        return self.owner.sessions
 
     @property
     def items(self) -> list[Union[ListItem, GroceryListItem, TaskListItem]]:
@@ -143,3 +151,8 @@ class GrockyList(Record):
                 return TaskListItem.load_query(
                     self.database, {"list_id": self.id, "parent_id": None}
                 )
+
+    def notify(self, context, event_subtype: str, data: dict):
+        context.post_event(
+            [i.id for i in self.sessions], f"list.{event_subtype}", event_data=data
+        )

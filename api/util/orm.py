@@ -50,3 +50,6 @@ class Record:
     
     def destroy(self):
         self.collection.delete_one({"id": self.id})
+
+    def notify(self, context, event_subtype: str, data: dict):
+        raise NotImplementedError()

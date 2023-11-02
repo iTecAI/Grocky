@@ -32,6 +32,9 @@ class Session(Record):
     @property
     def user_data(self) -> "User":
         return User.load_id(self.database, self.user) if self.user else None
+    
+    def notify(self, context, event_subtype: str, data: dict = {}):
+        context.post_event([self.id], f"session.{event_subtype}", event_data=data)
 
 
 @dataclass
@@ -87,6 +90,9 @@ class User(Record):
     @property
     def sessions(self) -> list[Session]:
         return Session.load_query(self.database, {"user": self.id})
+    
+    def notify(self, context, event_subtype: str, data: dict):
+        context.post_event([i.id for i in self.sessions], f"user.{event_subtype}", event_data=data)
         
     
 @dataclass
