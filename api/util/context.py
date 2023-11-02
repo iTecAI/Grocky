@@ -2,16 +2,15 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from os import environ, getenv
 from dataclasses import dataclass
-from typing import Any, Optional, Union
-from asyncio.queues import Queue
-from models.event import Event
+from typing import Any, Optional
 from models.auth import Session
 from open_groceries import OpenGrocery
 import time
 from minio import Minio
 from minio.tagging import Tags
 import io
-from asyncio import Queue
+from litestar.channels import ChannelsPlugin
+from uuid import uuid4
 
 
 @dataclass
@@ -52,7 +51,7 @@ class ContextOptions:
 
 
 class Context:
-    def __init__(self) -> None:
+    def __init__(self, channels: ChannelsPlugin) -> None:
         self.options: ContextOptions = self.get_options()
         self.client = MongoClient(
             host=self.options.db.host,
@@ -74,7 +73,7 @@ class Context:
         if not self.s3.bucket_exists(self.options.storage.bucket_name):
             self.s3.make_bucket(self.options.storage.bucket_name)
 
-        self.event_queues: dict[str, Queue[Event]] = {}
+        self.event_channels = channels
 
     def get_options(self) -> ContextOptions:
         load_dotenv()
@@ -125,11 +124,9 @@ class Context:
             content_type=mime,
         )
 
-    def get_object(
-        self, object_name: str
-    ) -> tuple[bytes, str]:
+    def get_object(self, object_name: str) -> tuple[bytes, str]:
         obj = self.s3.get_object(self.bucket, object_name)
-        
+
         return obj.data, obj.info().get("Content-Type", "application/octet-stream")
 
     def get_object_tags(self, object_name: str) -> Tags:
@@ -141,16 +138,11 @@ class Context:
     @property
     def bucket(self) -> str:
         return self.options.storage.bucket_name
-    
-    def push_event(self, event: Event):
-        sessions = []
-        for target in event.targets:
-            if target["type"] == "session":
-                sessions.append(target["record"].id)
-            else:
-                sessions.extend([i.id for i in target["record"].sessions])
-        
-        for s in sessions:
-            if s in self.event_queues.keys():
-                self.event_queues[s].put_nowait(event)
-                    
+
+    def post_event(
+        self, targets: list[str], event_type: str, event_data: dict = {}
+    ) -> None:
+        self.event_channels.publish(
+            dict(id=uuid4().hex, event=event_type, data=event_data),
+            [f"ws.{t}" for t in targets],
+        )

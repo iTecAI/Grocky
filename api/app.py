@@ -1,6 +1,8 @@
 from litestar import Litestar, Request, Response, get
 from litestar.datastructures import State
 from litestar.di import Provide
+from litestar.channels import ChannelsPlugin
+from litestar.channels.backends.memory import MemoryChannelsBackend
 from util import Context, ApiException, EndpointFilter
 from controllers import *
 from litestar.status_codes import *
@@ -46,7 +48,13 @@ async def get_root(context: Context) -> dict:
         "server_time": ctime()
     }
 
-context = Context()
+channels_plugin = ChannelsPlugin(
+    backend=MemoryChannelsBackend(),
+    arbitrary_channels_allowed=True,
+    ws_handler_base_path="/events"
+)
+
+context = Context(channels_plugin)
 
 app = Litestar(
     route_handlers=[
@@ -54,13 +62,13 @@ app = Litestar(
         AuthController,
         StorageController,
         UserController,
-        GroupsController,
-        EventsController
+        GroupsController
     ],
     state=State({"context": context}),
     dependencies={"context": Provide(dep_context)},
     exception_handlers={
         500: server_exception_handler,
         ApiException: api_exception_handler
-    }
+    },
+    plugins=[channels_plugin]
 )

@@ -8,7 +8,6 @@ from models import User, Group, RedactedUser, GrockyList
 from typing import Annotated, Optional
 import time
 from dataclasses import dataclass
-from .events import Event
 
 async def depends_group(id: str, context: Context) -> Group:
     result = Group.load_id(context.database, id)
@@ -41,13 +40,6 @@ class GroupsController(Controller):
             members=data.members,
         )
         new_group.save()
-        context.push_event(
-            Event.create(
-                "groups.list_update",
-                targets=[{"type": "group", "record": new_group}],
-                data={"reason": "create"},
-            )
-        )
         return new_group.json
 
     @get("/")
