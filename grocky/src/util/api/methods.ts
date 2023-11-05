@@ -1,6 +1,6 @@
 import { User } from "../../types/auth";
 import { GroupType } from "../../types/group";
-import { ListType } from "../../types/list";
+import { ListItem, ListType } from "../../types/list";
 import { RequestFunction, ApiContextType } from "./types";
 
 class AuthApiMethods {
@@ -167,10 +167,71 @@ class GroupApiMethods {
     }
 }
 
+class ListApiMethods {
+    constructor(
+        private context: ApiContextType,
+        private request: RequestFunction,
+    ) {}
+
+    public async create(
+        name: string,
+        description: string,
+        type: "grocery" | "task" | "general",
+        owner: { type: "user" | "group"; id: string },
+        options?: any,
+    ): Promise<ListType | string> {
+        const result = await this.request<ListType>("post", "/lists", {
+            body: {
+                name,
+                description,
+                type,
+                owner,
+                options: options ?? {},
+            },
+        });
+
+        if (result.success) {
+            return result.data;
+        }
+        return result.code;
+    }
+
+    public async get_user_lists(): Promise<ListType[]> {
+        const result = await this.request<ListType[]>("get", "/lists/for/user");
+
+        if (result.success) {
+            return result.data;
+        }
+        return [];
+    }
+
+    public async get_list_items(id: string): Promise<ListItem[]> {
+        const result = await this.request<ListItem[]>(
+            "get",
+            `/lists/${id}/items`,
+        );
+
+        if (result.success) {
+            return result.data;
+        }
+        return [];
+    }
+
+    public async get_list_by_id(id: string): Promise<ListType | null> {
+        const result = await this.request<ListType>("get", `/lists/${id}`);
+
+        if (result.success) {
+            return result.data;
+        }
+        return null;
+    }
+}
+
 export class ApiMethods {
     public auth: AuthApiMethods;
     public user: UserApiMethods;
     public groups: GroupApiMethods;
+    public lists: ListApiMethods;
     constructor(
         private context: ApiContextType,
         private request: RequestFunction,
@@ -178,5 +239,6 @@ export class ApiMethods {
         this.auth = new AuthApiMethods(this.context, this.request);
         this.user = new UserApiMethods(this.context, this.request);
         this.groups = new GroupApiMethods(this.context, this.request);
+        this.lists = new ListApiMethods(this.context, this.request);
     }
 }

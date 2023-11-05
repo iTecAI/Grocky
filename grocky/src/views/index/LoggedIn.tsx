@@ -10,14 +10,27 @@ import {
     Text,
     TextInput,
 } from "@mantine/core";
-import { MdGroup, MdGroupAdd, MdList, MdSearch } from "react-icons/md";
+import {
+    MdCheckBox,
+    MdGroup,
+    MdGroupAdd,
+    MdList,
+    MdSearch,
+    MdShoppingBag,
+    MdSupervisedUserCircle,
+} from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { useModals } from "../modals";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { GroupType, isGroupType } from "../../types/group";
 import { useApi, useUser } from "../../util/api";
 import { useServerEvent } from "../../util/events";
-import { ListType } from "../../types/list";
+import {
+    GroceryListItemType,
+    ListItem,
+    ListType,
+    TaskListItemType,
+} from "../../types/list";
 import { User } from "../../types/auth";
 
 const GroupCard = memo(({ group }: { group: GroupType }) => {
@@ -37,12 +50,11 @@ const GroupCard = memo(({ group }: { group: GroupType }) => {
         <Card className="grocky-item group" withBorder>
             <Stack gap="sm" className="item-layout">
                 <Group gap="sm" justify="space-between">
-                    <MdGroup
-                        size="1.8em"
-                        color={
-                            user?.id === group.owner ? "goldenrod" : undefined
-                        }
-                    />
+                    {user && group.owner === user.id ? (
+                        <MdSupervisedUserCircle size="1.8em" />
+                    ) : (
+                        <MdGroup size="1.8em" />
+                    )}
                     <Text size="lg" fw={500} className="item-title">
                         {group.name}
                     </Text>
@@ -84,25 +96,134 @@ const GroupCard = memo(({ group }: { group: GroupType }) => {
     );
 });
 
+const ListCard = memo(({ list }: { list: ListType }) => {
+    const { t } = useTranslation();
+    const { lists } = useApi();
+    const IconElement = useMemo(() => {
+        switch (list.type) {
+            case "general":
+                return MdList;
+            case "grocery":
+                return MdShoppingBag;
+            case "task":
+                return MdCheckBox;
+        }
+    }, [list.type]);
+
+    const [items, setItems] = useState<ListItem[]>([]);
+
+    useEffect(() => {
+        lists.get_list_items(list.id).then(setItems);
+    }, [list.id]);
+
+    return (
+        <Card className="grocky-item list" withBorder>
+            <Stack gap="sm" className="item-layout">
+                <Group gap="sm" justify="space-between">
+                    <IconElement size="1.8em" />
+                    <Text size="lg" fw={500} className="item-title">
+                        {list.name}
+                    </Text>
+                </Group>
+                <Paper p="sm" className="item-desc">
+                    {list.description.length === 0 ? (
+                        <Text fs="italic" c="dimmed">
+                            {t("views.home.items.list.no_description")}
+                        </Text>
+                    ) : (
+                        <Text>{list.description}</Text>
+                    )}
+                </Paper>
+                <Paper p="sm">
+                    <Group gap="sm" justify="space-between">
+                        <Text fw={600}>{t("views.home.items.list.items")}</Text>
+                        <Text c="dimmed">
+                            {items.filter((l) => !l.checked).length} /{" "}
+                            {items.length}
+                        </Text>
+                    </Group>
+                </Paper>
+                {list.type === "grocery" && (
+                    <Paper p="sm">
+                        <Group gap="sm" justify="space-between">
+                            <Text fw={600}>
+                                {t("views.home.items.list.budget")}
+                            </Text>
+                            <Text c="dimmed">
+                                {new Intl.NumberFormat("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                    minimumFractionDigits: 2,
+                                }).format(
+                                    (items as GroceryListItemType[]).reduce(
+                                        (prev, curr) =>
+                                            prev +
+                                            (curr.linked?.item?.price ?? 0),
+                                        0,
+                                    ),
+                                )}
+                            </Text>
+                        </Group>
+                    </Paper>
+                )}
+                {list.type === "task" && (
+                    <Paper p="sm">
+                        <Group gap="sm" justify="space-between">
+                            <Text fw={600}>
+                                {t("views.home.items.list.taskUpcoming")}
+                            </Text>
+                            {items.length > 0 ? (
+                                <Text c="dimmed">
+                                    {
+                                        (items as TaskListItemType[])
+                                            .filter(
+                                                (v) =>
+                                                    !v.checked &&
+                                                    v.deadline &&
+                                                    v.deadline * 1000 >=
+                                                        Date.now(),
+                                            )
+                                            .sort(
+                                                (a, b) =>
+                                                    (a.deadline ?? 0) -
+                                                    (b.deadline ?? 0),
+                                            )[0].title
+                                    }
+                                </Text>
+                            ) : (
+                                <Text c="dimmed">
+                                    {t("views.home.items.list.noTask")}
+                                </Text>
+                            )}
+                        </Group>
+                    </Paper>
+                )}
+            </Stack>
+        </Card>
+    );
+});
+
 export function IndexLoggedIn() {
     const { t } = useTranslation();
     const { createGroup, createList } = useModals();
     const [search, setSearch] = useState("");
-    const { groups } = useApi();
+    const { groups, lists } = useApi();
     const loadItems = useCallback(async () => {
         const results: (GroupType | ListType)[] = [];
         results.push(...(await groups.get_groups()));
+        results.push(...(await lists.get_user_lists()));
 
         return results;
     }, []);
 
     const [userItems, setUserItems] = useState<(GroupType | ListType)[]>([]);
-    const groupsListener = useCallback(
+    const groupsListsListener = useCallback(
         () => loadItems().then(setUserItems),
         [],
     );
 
-    useServerEvent("group.update", groupsListener);
+    useServerEvent("group.update", groupsListsListener);
+    useServerEvent("list.update", groupsListsListener);
 
     useEffect(() => {
         loadItems().then(setUserItems);
@@ -137,7 +258,7 @@ export function IndexLoggedIn() {
                         isGroupType(item) ? (
                             <GroupCard group={item} key={item.id} />
                         ) : (
-                            <></>
+                            <ListCard list={item} key={item.id} />
                         ),
                     )}
                 <Card className="grocky-item create" withBorder>

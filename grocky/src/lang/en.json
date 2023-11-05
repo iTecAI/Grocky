@@ -1,20 +1,20 @@
 {
   "common": {
-      "appName": "Grocky",
-      "notifications": {
-          "success": "Success!",
-          "warning": "Warning:",
-          "error": "Error!",
-          "info": "Info:"
-      },
-      "actions": {
-          "cancel": "Cancel",
-          "save": "Save",
-          "submit": "Submit"
-      },
-      "feedback": {
-          "noResults": "No Results"
-      }
+    "appName": "Grocky",
+    "notifications": {
+      "success": "Success!",
+      "warning": "Warning:",
+      "error": "Error!",
+      "info": "Info:"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "submit": "Submit"
+    },
+    "feedback": {
+      "noResults": "No Results"
+    }
   },
   "views": {
     "layout": {
@@ -49,6 +49,13 @@
           "no_description": "No description provided",
           "users": "Members",
           "lists": "Lists"
+        },
+        "list": {
+          "no_description": "No description provided",
+          "items": "Unchecked Items",
+          "budget": "Est. Cost",
+          "taskUpcoming": "Next Task",
+          "noTask": "None"
         }
       },
       "actions": {
@@ -177,7 +184,8 @@
             }
           }
         }
-      }
+      },
+      "success": "Created list!"
     }
   },
   "errors": {

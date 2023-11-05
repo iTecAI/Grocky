@@ -96,6 +96,7 @@ class ListItem(Record):
 class GroceryListItem(ListItem):
     type: Literal["grocery"]
     linked: Union[None, LinkedGroceryItem]
+    quantity: float
 
     @property
     def alternative_to(self) -> Union[None, "GroceryListItem"]:
@@ -116,6 +117,16 @@ class TaskListItem(ListItem):
     def assignees(self) -> list[User]:
         return User.load_query(self.database, {"id": {"$in": self.assigned_to}})
 
+@dataclass
+class AssembledList:
+    id: str
+    name: str
+    description: str
+    owner_type: Literal["group", "user"]
+    owner: Union[Group, User]
+    type: Literal["grocery", "task", "general"]
+    options: dict
+    items: list[Union[ListItem, GroceryListItem, TaskListItem]]
 
 @dataclass
 class GrockyList(Record):
@@ -135,6 +146,12 @@ class GrockyList(Record):
     @property
     def sessions(self) -> list[Session]:
         return self.owner.sessions
+    
+    @property
+    def users(self) -> list[User]:
+        if self.owned_by["type"] == "group":
+            return self.owner.users
+        return [self.owner]
 
     @property
     def items(self) -> list[Union[ListItem, GroceryListItem, TaskListItem]]:
@@ -155,4 +172,17 @@ class GrockyList(Record):
     def notify(self, context, event_subtype: str, data: dict):
         context.post_event(
             [i.id for i in self.sessions], f"list.{event_subtype}", event_data=data
+        )
+
+    @property
+    def assembled(self) -> AssembledList:
+        return AssembledList(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            owner_type=self.owned_by["type"],
+            owner=self.owner,
+            type=self.type,
+            options=self.options,
+            items=self.items
         )

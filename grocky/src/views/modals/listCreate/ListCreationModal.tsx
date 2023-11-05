@@ -19,7 +19,9 @@ import {
     MdList,
     MdShoppingBag,
 } from "react-icons/md";
-import { startCase } from "lodash";
+import { isString, startCase } from "lodash";
+import { useApi } from "../../../util/api";
+import { useNotifications } from "../../../util/notifications";
 
 const STORES = ["costco", "wegmans"];
 
@@ -29,6 +31,8 @@ export function ListCreationModal({
     innerProps,
 }: ContextModalProps<{ ownerType: "user" | "group"; ownerId: string }>) {
     const { t } = useTranslation();
+    const { lists } = useApi();
+    const { error, success } = useNotifications();
     const form = useForm<{
         name: string;
         description: string;
@@ -37,6 +41,8 @@ export function ListCreationModal({
             grocery: {
                 stores: string[];
             };
+            general: undefined;
+            task: undefined;
         };
     }>({
         initialValues: {
@@ -47,6 +53,8 @@ export function ListCreationModal({
                 grocery: {
                     stores: STORES,
                 },
+                general: undefined,
+                task: undefined,
             },
         },
         validate: {
@@ -57,7 +65,24 @@ export function ListCreationModal({
     return (
         <form
             className="modals create-list"
-            onSubmit={form.onSubmit((values) => console.log(values))}
+            onSubmit={form.onSubmit((values) =>
+                lists
+                    .create(
+                        values.name,
+                        values.description,
+                        values.type,
+                        { type: innerProps.ownerType, id: innerProps.ownerId },
+                        values.options[values.type],
+                    )
+                    .then((value) => {
+                        if (isString(value)) {
+                            error(value, true);
+                        } else {
+                            success(t("modals.createList.success"));
+                            context.closeModal(id);
+                        }
+                    }),
+            )}
         >
             <Stack gap="sm">
                 <TextInput

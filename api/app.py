@@ -80,7 +80,8 @@ app = Litestar(
         AuthController,
         StorageController,
         UserController,
-        GroupsController
+        GroupsController,
+        ListsController
     ],
     state=State({"context": context}),
     dependencies={"context": Provide(dep_context)},
