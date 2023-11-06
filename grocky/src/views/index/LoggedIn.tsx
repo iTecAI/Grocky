@@ -32,6 +32,7 @@ import {
     TaskListItemType,
 } from "../../types/list";
 import { User } from "../../types/auth";
+import { useNavigate } from "react-router-dom";
 
 const GroupCard = memo(({ group }: { group: GroupType }) => {
     const { t } = useTranslation();
@@ -46,8 +47,14 @@ const GroupCard = memo(({ group }: { group: GroupType }) => {
         groups.get_group_lists(group.id).then(setLists);
     }, [group.id]);
 
+    const nav = useNavigate();
+
     return (
-        <Card className="grocky-item group" withBorder>
+        <Card
+            className="grocky-item group"
+            withBorder
+            onClick={() => nav(`/group/${group.id}`)}
+        >
             <Stack gap="sm" className="item-layout">
                 <Group gap="sm" justify="space-between">
                     {user && group.owner === user.id ? (

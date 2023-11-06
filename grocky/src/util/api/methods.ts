@@ -145,6 +145,15 @@ class GroupApiMethods {
         }
     }
 
+    public async get_group(id: string): Promise<GroupType | null> {
+        const result = await this.request<GroupType>("get", `/groups/${id}`);
+        if (result.success) {
+            return result.data;
+        } else {
+            return null;
+        }
+    }
+
     public async get_group_users(id: string): Promise<User[]> {
         const result = await this.request<User[]>("get", `/groups/${id}/users`);
         if (result.success) {

@@ -41,6 +41,11 @@ class Group(Record):
             [i.id for i in self.sessions], f"group.{event_subtype}", event_data=data
         )
 
+    def notify_self(self, context, event: str, data: dict):
+        context.post_event(
+            [i.id for i in self.sessions], f"group.{self.id}.{event}", event_data=data
+        )
+
 
 class OwnerDescriptor(TypedDict):
     type: Literal["group", "user"]

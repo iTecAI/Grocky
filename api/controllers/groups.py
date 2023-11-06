@@ -50,6 +50,12 @@ class GroupsController(Controller):
         )
         return [r.json for r in results]
     
+    @get("/{id:str}", dependencies={"group": Provide(depends_group)})
+    async def get_group(self, group: Group, user: User) -> Group:
+        if not user.id in [*group.members, group.owner]:
+            raise ApiException("group.not_found", status_code=404)
+        return group.json
+
     @get("/{id:str}/users", dependencies={"group": Provide(depends_group)})
     async def get_group_users(self, group: Group, user: User) -> list[RedactedUser]:
         if not user.id in [*group.members, group.owner]:

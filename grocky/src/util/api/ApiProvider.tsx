@@ -58,6 +58,12 @@ export function ApiProvider({
                         method,
                         headers: session
                             ? { Authorization: session.id }
+                            : localStorage.getItem("token")
+                            ? {
+                                  Authorization: localStorage.getItem(
+                                      "token",
+                                  ) as string,
+                              }
                             : undefined,
                         body: options?.body
                             ? JSON.stringify(options.body)
