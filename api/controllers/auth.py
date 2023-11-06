@@ -24,14 +24,13 @@ class AuthController(Controller):
             result: Session = Session.load_id(context.database, authorization)
             if result:
                 if (
-                    result.last_request + context.options.security.session_timeout
-                    < time.time()
+                    context.check_session(result)
                 ):
+                    return result.json
+                else:
                     result.destroy()
                     return Session.create(context.database).json
-                else:
-                    result.last_request = time.time()
-                    return result.json
+                    
             else:
                 return Session.create(context.database).json
         else:

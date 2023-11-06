@@ -4,4 +4,5 @@ Collaborative shopping list app
 
 ### Standards:
 
-* Datetime storage: UTC datetimes in seconds
+* Datetime storage: UTC datetime objects
+  * Objects on the backend, strings on the frontend

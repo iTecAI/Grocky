@@ -180,8 +180,8 @@ const ListCard = memo(({ list }: { list: ListType }) => {
                                                 (v) =>
                                                     !v.checked &&
                                                     v.deadline &&
-                                                    v.deadline * 1000 >=
-                                                        Date.now(),
+                                                    new Date(v.deadline) >=
+                                                        new Date(Date.now()),
                                             )
                                             .sort(
                                                 (a, b) =>

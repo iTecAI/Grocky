@@ -4,10 +4,9 @@ from litestar.di import Provide
 from litestar.channels import ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.config.cors import CORSConfig
-from util import Context, ApiException, EndpointFilter, ErrorFilter
+from util import Context, ApiException, EndpointFilter, ErrorFilter, Time
 from controllers import *
 from litestar.status_codes import *
-from time import ctime
 import logging
 
 logging.getLogger("uvicorn.access").addFilter(EndpointFilter(["/"]))
@@ -62,7 +61,7 @@ def ws_exception_handler(req: Request, exc: Exception) -> Response:
 @get("/")
 async def get_root() -> dict:
     return {
-        "server_time": ctime()
+        "server_time": Time().utc
     }
 
 channels_plugin = ChannelsPlugin(

@@ -1,6 +1,6 @@
 export type Session = {
     id: string;
-    last_request: number;
+    last_request: string;
     user: User | null;
 };
 

@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from datetime import datetime
 from util.orm import Record
+from util.time_conversions import Time
 from .auth import Session, User
 from open_groceries import GroceryItem
 from typing import Literal, Union
 from typing_extensions import TypedDict
-from time import time
 
 
 @dataclass
@@ -49,7 +50,7 @@ class OwnerDescriptor(TypedDict):
 @dataclass
 class LinkedGroceryItem:
     item: GroceryItem
-    last_update: float
+    last_update: datetime
     linked: bool
 
     def update(self, context):
@@ -62,7 +63,7 @@ class LinkedGroceryItem:
         except:
             self.linked = False
 
-        self.last_update = time()
+        self.last_update = Time().utc
 
 
 @dataclass
@@ -96,7 +97,7 @@ class ListItem(Record):
 class GroceryListItem(ListItem):
     type: Literal["grocery"]
     linked: Union[None, LinkedGroceryItem]
-    quantity: float
+    quantity: datetime
 
     @property
     def alternative_to(self) -> Union[None, "GroceryListItem"]:

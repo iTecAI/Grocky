@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from pymongo.database import Database
 from util.orm import Record
+from util.time_conversions import Time
 from typing import Optional
-import time
+import time, datetime
 from hashlib import pbkdf2_hmac, sha256
 from secrets import token_hex
 
@@ -10,13 +11,13 @@ from secrets import token_hex
 @dataclass
 class Session(Record):
     collection_name = "sessions"
-    last_request: float
+    last_request: datetime.datetime
     user: Optional[str]
 
     @classmethod
     def create(cls, database: Database) -> "Session":
         new_session = Session(
-            id=cls._id(), database=database, last_request=time.time(), user=None
+            id=cls._id(), database=database, last_request=Time().utc, user=None
         )
         new_session.save()
         return new_session

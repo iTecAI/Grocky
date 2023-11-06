@@ -49,7 +49,7 @@ export type GroceryItem = {
 };
 
 export type LinkedGroceryItem = {
-    last_update: number;
+    last_update: string;
     linked: boolean;
     item: GroceryItem;
 };

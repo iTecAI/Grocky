@@ -11,6 +11,8 @@ from minio.tagging import Tags
 import io
 from litestar.channels import ChannelsPlugin
 from uuid import uuid4
+from datetime import timedelta
+from .time_conversions import Time
 
 
 @dataclass
@@ -102,11 +104,11 @@ class Context:
         )
 
     def check_session(self, session: Session) -> bool:
-        if session.last_request + self.options.security.session_timeout < time.time():
+        if session.last_request + timedelta(seconds=self.options.security.session_timeout) < Time().utc:
             session.destroy()
             return False
         else:
-            session.last_request = time.time()
+            session.last_request = Time().utc
             return True
 
     def store_object(
