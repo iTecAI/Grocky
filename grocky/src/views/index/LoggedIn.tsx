@@ -127,15 +127,17 @@ export function IndexLoggedIn() {
 
     return (
         <Stack gap="sm">
-            <TextInput
-                value={search}
-                onChange={(ev) => setSearch(ev.target.value)}
-                placeholder={t("views.home.actions.search")}
-                leftSection={<MdSearch size="1.3em" />}
-                variant="filled"
-                size="lg"
-            />
-            <Divider />
+            <Stack gap="sm" className="search-header">
+                <TextInput
+                    value={search}
+                    onChange={(ev) => setSearch(ev.target.value)}
+                    placeholder={t("views.home.actions.search")}
+                    leftSection={<MdSearch size="1.3em" />}
+                    variant="filled"
+                    size="lg"
+                />
+                <Divider />
+            </Stack>
             <SimpleGrid
                 className="index-main"
                 cols={{

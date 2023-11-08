@@ -35,6 +35,16 @@
     }
 }
 
+.search-header {
+    position: sticky;
+    top: 0px;
+    z-index: 100;
+    background-color: var(--mantine-color-body);
+    padding-top: 16px;
+    transform: translate(0, -16px);
+    margin-bottom: -16px;
+}
+
 .index-main {
     position: relative;
     width: 100%;
