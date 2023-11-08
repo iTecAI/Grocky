@@ -191,6 +191,13 @@
         }
       },
       "success": "Created list!"
+    },
+    "groupSettings": {
+      "title": "Group Settings",
+      "fields": {
+        "name": "Group Name",
+        "description": "Group Description"
+      }
     }
   },
   "errors": {

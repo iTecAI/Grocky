@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useServerEvent } from "../../util/events";
-import { useApi, useReady, useSession } from "../../util/api";
+import { useApi, useReady, useSession, useUser } from "../../util/api";
 import { useCallback, useEffect, useState } from "react";
 import { ListType } from "../../types/list";
 import { User } from "../../types/auth";
@@ -18,7 +18,7 @@ import {
     Text,
 } from "@mantine/core";
 import "./groups.scss";
-import { MdList, MdSearch, MdSettings } from "react-icons/md";
+import { MdGroups, MdInfo, MdList, MdSearch, MdSettings } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { useModals } from "../modals";
 import { ListCard } from "../../components/ListCard/ListCard";
@@ -26,6 +26,7 @@ import { ListCard } from "../../components/ListCard/ListCard";
 export function GroupPage() {
     const { groupId } = useParams();
     const { groups } = useApi();
+    const [user] = useUser();
     const ready = useReady();
     const session = useSession();
     const { t } = useTranslation();
@@ -58,11 +59,11 @@ export function GroupPage() {
     useServerEvent(`group.${groupId ?? "null"}.lists`, loadLists);
     useServerEvent(`group.${groupId ?? "null"}.users`, loadMembers);
 
-    const { createList } = useModals();
+    const { createList, groupSettings } = useModals();
 
     const [search, setSearch] = useState("");
 
-    return group && groupId ? (
+    return group && groupId && user ? (
         <Stack gap="sm">
             <Stack gap="sm" className="search-header">
                 <Group gap="sm">
@@ -75,9 +76,26 @@ export function GroupPage() {
                         size="lg"
                         style={{ flexGrow: 2 }}
                     />
-                    <ActionIcon size="xl" variant="subtle">
-                        <MdSettings size="1.8em" />
-                    </ActionIcon>
+                    {group.owner === user.id ? (
+                        <Group gap="sm">
+                            <ActionIcon size="xl" variant="subtle">
+                                <MdGroups size="1.8em" />
+                            </ActionIcon>
+                            <ActionIcon
+                                size="xl"
+                                variant="subtle"
+                                onClick={() =>
+                                    groupSettings({ group: groupId })
+                                }
+                            >
+                                <MdSettings size="1.8em" />
+                            </ActionIcon>
+                        </Group>
+                    ) : (
+                        <ActionIcon size="xl" variant="subtle">
+                            <MdInfo size="1.8em" />
+                        </ActionIcon>
+                    )}
                 </Group>
                 <Divider />
             </Stack>

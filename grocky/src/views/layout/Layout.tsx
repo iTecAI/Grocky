@@ -67,7 +67,7 @@ export function Layout() {
         <AppShell className="app-root">
             <AppShell.Header className="app-header">
                 <Group justify="space-between" className="header-group">
-                    <Group gap="md" className="left">
+                    <Group gap="md" className="left" onClick={() => nav("/")}>
                         <Avatar className="app-icon" src={AppIcon} />
                         <span className="app-title">{t("common.appName")}</span>
                     </Group>

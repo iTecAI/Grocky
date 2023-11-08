@@ -70,6 +70,18 @@ export function useModals(): {
                     ),
                     innerProps: options,
                 }),
+            groupSettings: (options: { group: string }) => {
+                modals.openContextModal({
+                    modal: "groupSettings",
+                    title: (
+                        <Group className="modal-title" justify="space-between">
+                            <MdSettings size="1.2em" />
+                            {t("modals.groupSettings.title")}
+                        </Group>
+                    ),
+                    innerProps: options,
+                });
+            },
         }),
         [],
     );
