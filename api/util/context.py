@@ -78,13 +78,13 @@ class Context:
         self.event_channels = channels
 
     def get_options(self) -> ContextOptions:
-        load_dotenv()
+        #load_dotenv()
         return ContextOptions(
             db=DatabaseOptions(
                 host=environ["MONGO_HOST"],
                 port=int(getenv("MONGO_PORT", "27017")),
-                database=getenv("MONGO_DATABASE", "grocky"),
-                user=getenv("MONGO_USER", "grocky"),
+                database=getenv("MONGO_DATABASE", None),
+                user=getenv("MONGO_USER", None),
                 password=getenv("MONGO_PASSWORD"),
             ),
             security=SecurityOptions(

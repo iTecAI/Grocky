@@ -1,5 +1,24 @@
 services:
+  mongo:
+    image: mongo
+    restart: always
+
+    volumes:
+      - ./data/mongo:/data/db
+
+  minio:
+    image: bitnami/minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - './data/minio:/bitnami/minio/data'
+
+    environment:
+      - MINIO_ROOT_USER=grocky-minio
+      - MINIO_ROOT_PASSWORD=grocky-minio
   api:
+    restart: always
     build: ./api
     volumes:
       - ./api:/usr/src/app
@@ -11,8 +30,12 @@ services:
       - ./.env
 
     stop_signal: SIGINT
+    depends_on:
+      - mongo
+      - minio
 
   client:
+    restart: always
     build: ./grocky
     volumes:
       - ./grocky:/usr/src/app
