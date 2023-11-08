@@ -12,11 +12,12 @@ import {
 import AppIcon from "../../assets/icon.png";
 import "./layout.scss";
 import { useTranslation } from "react-i18next";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEnvironment } from "../../util/hooks";
 import { MdLogin, MdLogout, MdSettings } from "react-icons/md";
 import { useModals } from "../modals";
 import { useApi, useUser } from "../../util/api";
+import { useEffect } from "react";
 
 function UserMenu() {
     const [user] = useUser();
@@ -53,6 +54,14 @@ export function Layout() {
     const { height } = useEnvironment();
     const { login } = useModals();
     const [user] = useUser();
+    const nav = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (!user && location.pathname !== "/") {
+            nav("/");
+        }
+    }, [user?.id, location]);
 
     return (
         <AppShell className="app-root">
