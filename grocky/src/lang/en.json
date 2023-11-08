@@ -198,6 +198,9 @@
         "name": "Group Name",
         "description": "Group Description"
       }
+    },
+    "groupMembers": {
+      "title": "Group Members"
     }
   },
   "errors": {

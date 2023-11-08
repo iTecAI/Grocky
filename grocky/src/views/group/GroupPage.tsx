@@ -59,7 +59,7 @@ export function GroupPage() {
     useServerEvent(`group.${groupId ?? "null"}.lists`, loadLists);
     useServerEvent(`group.${groupId ?? "null"}.users`, loadMembers);
 
-    const { createList, groupSettings } = useModals();
+    const { createList, groupSettings, groupMembers } = useModals();
 
     const [search, setSearch] = useState("");
 
@@ -78,7 +78,11 @@ export function GroupPage() {
                     />
                     {group.owner === user.id ? (
                         <Group gap="sm">
-                            <ActionIcon size="xl" variant="subtle">
+                            <ActionIcon
+                                size="xl"
+                                variant="subtle"
+                                onClick={() => groupMembers({ group: groupId })}
+                            >
                                 <MdGroups size="1.8em" />
                             </ActionIcon>
                             <ActionIcon

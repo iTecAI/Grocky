@@ -2,7 +2,7 @@ import { Group } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { MdCreate, MdLogin, MdSettings } from "react-icons/md";
+import { MdCreate, MdGroups, MdLogin, MdSettings } from "react-icons/md";
 import { MODALS } from "./util";
 
 export function useModals(): {
@@ -77,6 +77,18 @@ export function useModals(): {
                         <Group className="modal-title" justify="space-between">
                             <MdSettings size="1.2em" />
                             {t("modals.groupSettings.title")}
+                        </Group>
+                    ),
+                    innerProps: options,
+                });
+            },
+            groupMembers: (options: { group: string }) => {
+                modals.openContextModal({
+                    modal: "groupMembers",
+                    title: (
+                        <Group className="modal-title" justify="space-between">
+                            <MdGroups size="1.2em" />
+                            {t("modals.groupMembers.title")}
                         </Group>
                     ),
                     innerProps: options,
