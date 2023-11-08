@@ -24,6 +24,12 @@ class GroupCreationModel:
     members: list[str]
 
 
+@dataclass
+class GroupSettingsModel:
+    name: str
+    description: str
+
+
 class GroupsController(Controller):
     path = "/groups"
     guards = [guard_session, guard_logged_in]
@@ -69,3 +75,19 @@ class GroupsController(Controller):
         if not user.id in [*group.members, group.owner]:
             raise ApiException("group.not_found", status_code=404)
         return [l.json for l in group.lists]
+
+    @post("/{id:str}/settings", dependencies={"group": Provide(depends_group)})
+    async def update_group_settings(
+        self, group: Group, user: User, context: Context, data: GroupSettingsModel
+    ) -> Group:
+        if not user.id in [*group.members, group.owner]:
+            raise ApiException("group.not_found", status_code=404)
+
+        if user.id != group.owner:
+            raise ApiException("group.not_owner", status_code=401)
+
+        group.name = data.name
+        group.description = data.description
+        group.save()
+        group.notify_self(context, "changed", {"reason": "settings"})
+        return group.json

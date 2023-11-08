@@ -174,6 +174,22 @@ class GroupApiMethods {
             return [];
         }
     }
+
+    public async update_group_settings(
+        id: string,
+        settings: { name: string; description: string },
+    ): Promise<GroupType | null> {
+        const result = await this.request<GroupType>(
+            "post",
+            `/groups/${id}/settings`,
+            { body: settings },
+        );
+        if (result.success) {
+            return result.data;
+        } else {
+            return null;
+        }
+    }
 }
 
 class ListApiMethods {
