@@ -28,6 +28,13 @@ class UserController(Controller):
     async def get_self(self, user: User) -> RedactedUser:
         return user.redacted
 
+    @get("/{id:str}")
+    async def get_user(self, id: str, context: Context) -> RedactedUser:
+        result: User = User.load_id(context.database, id)
+        if not result:
+            raise ApiException("users.not_found", status_code=404)
+        return result.redacted
+
     @post("/settings")
     async def update_user_settings(
         self, user: User, data: dict, context: Context

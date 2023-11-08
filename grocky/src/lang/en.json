@@ -200,7 +200,8 @@
       }
     },
     "groupMembers": {
-      "title": "Group Members"
+      "title": "Group Members",
+      "search": "Add Members"
     }
   },
   "errors": {

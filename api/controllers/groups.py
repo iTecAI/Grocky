@@ -1,5 +1,5 @@
 from litestar.controller import Controller
-from litestar import get, post, delete
+from litestar import get, post, delete, put
 from litestar.params import Parameter
 from litestar.status_codes import *
 from litestar.di import Provide
@@ -91,3 +91,23 @@ class GroupsController(Controller):
         group.save()
         group.notify_self(context, "changed", {"reason": "settings"})
         return group.json
+
+    @put(
+        "/{id:str}/members/{user_id:str}",
+        dependencies={"group": Provide(depends_group)},
+    )
+    async def add_member(
+        self, group: Group, user: User, context: Context, user_id: str
+    ) -> list[RedactedUser]:
+        if not user.id in [*group.members, group.owner]:
+            raise ApiException("group.not_found", status_code=404)
+
+        if user.id != group.owner:
+            raise ApiException("group.not_owner", status_code=401)
+
+        if not user_id in group.members:
+            group.members.append(user_id)
+
+        group.save()
+        group.notify_self(context, "users", {"reason": "member.add"})
+        return [u.redacted for u in group.users]

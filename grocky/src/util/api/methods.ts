@@ -70,6 +70,14 @@ class UserApiMethods {
         return result.code;
     }
 
+    public async get(id: string): Promise<User | null> {
+        const result = await this.request<User>("get", `/user/${id}`);
+        if (result.success) {
+            return result.data;
+        }
+        return null;
+    }
+
     public async updateSettings(
         newSettings: Partial<User>,
     ): Promise<User | string> {
