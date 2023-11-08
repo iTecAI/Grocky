@@ -65,6 +65,11 @@
           "groups": "Show Groups"
         }
       }
+    },
+    "group": {
+      "actions": {
+        "search": "Search"
+      }
     }
   },
   "modals": {
