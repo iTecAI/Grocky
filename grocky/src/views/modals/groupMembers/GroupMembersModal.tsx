@@ -107,7 +107,7 @@ function MemberCard({ group, user }: { group: GroupType; user: User }) {
 
 export function GroupMembersModal({
     innerProps,
-}: ContextModalProps<{ group: string; onClose: () => void }>) {
+}: ContextModalProps<{ group: string }>) {
     const [members, setMembers] = useState<User[]>([]);
     const [groupData, setGroupData] = useState<GroupType | null>(null);
     const ready = useReady();

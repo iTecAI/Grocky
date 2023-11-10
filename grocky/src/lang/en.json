@@ -214,6 +214,9 @@
           "message": "Are you sure you want to make {{name}} the owner of this group? You will lose all group administration rights."
         }
       }
+    },
+    "groupInfo": {
+      "title": "Group Info"
     }
   },
   "errors": {

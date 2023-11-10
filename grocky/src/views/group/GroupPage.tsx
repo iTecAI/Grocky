@@ -3,7 +3,6 @@ import { useServerEvent } from "../../util/events";
 import { useApi, useReady, useSession, useUser } from "../../util/api";
 import { useCallback, useEffect, useState } from "react";
 import { ListType } from "../../types/list";
-import { User } from "../../types/auth";
 import { GroupType } from "../../types/group";
 import {
     ActionIcon,
@@ -32,7 +31,6 @@ export function GroupPage() {
     const { t } = useTranslation();
 
     const [lists, setLists] = useState<ListType[]>([]);
-    const [members, setMembers] = useState<User[]>([]);
     const [group, setGroup] = useState<GroupType | null>(null);
 
     const loadData = useCallback(async () => {
@@ -43,23 +41,17 @@ export function GroupPage() {
         setLists(groupId ? await groups.get_group_lists(groupId) : []);
     }, [groupId]);
 
-    const loadMembers = useCallback(async () => {
-        setMembers(groupId ? await groups.get_group_users(groupId) : []);
-    }, [groupId]);
-
     useEffect(() => {
         if (ready && groupId && session) {
             loadData();
             loadLists();
-            loadMembers();
         }
     }, [ready, session, groupId]);
 
     useServerEvent(`group.${groupId ?? "null"}.changed`, loadData);
     useServerEvent(`group.${groupId ?? "null"}.lists`, loadLists);
-    useServerEvent(`group.${groupId ?? "null"}.users`, loadMembers);
 
-    const { createList, groupSettings, groupMembers } = useModals();
+    const { createList, groupSettings, groupMembers, groupInfo } = useModals();
 
     const [search, setSearch] = useState("");
 
@@ -101,7 +93,11 @@ export function GroupPage() {
                             </ActionIcon>
                         </Group>
                     ) : (
-                        <ActionIcon size="xl" variant="subtle">
+                        <ActionIcon
+                            size="xl"
+                            variant="subtle"
+                            onClick={() => groupInfo({ group: groupId })}
+                        >
                             <MdInfo size="1.8em" />
                         </ActionIcon>
                     )}

@@ -95,6 +95,19 @@ export function useModals(): {
                     onClose: options.onClose,
                 });
             },
+            groupInfo: (options: { group: string; onClose: () => void }) => {
+                modals.openContextModal({
+                    modal: "groupInfo",
+                    title: (
+                        <Group className="modal-title" justify="space-between">
+                            <MdGroups size="1.2em" />
+                            {t("modals.groupInfo.title")}
+                        </Group>
+                    ),
+                    innerProps: options,
+                    onClose: options.onClose,
+                });
+            },
         }),
         [],
     );

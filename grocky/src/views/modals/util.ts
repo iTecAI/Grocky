@@ -1,6 +1,7 @@
 import { AccountManagementModal } from "./accountManagementModal/AccountManagementModal";
 import { CreateAccountModal } from "./createAccountModal/CreateAccountModal";
 import { GroupCreationModal } from "./groupCreate/GroupCreationModal";
+import { GroupInfoModal } from "./groupInfo/GroupInfoModal";
 import { GroupMembersModal } from "./groupMembers/GroupMembersModal";
 import { GroupSettingsModal } from "./groupSettings/GroupSettingsModal";
 import { ListCreationModal } from "./listCreate/ListCreationModal";
@@ -14,4 +15,5 @@ export const MODALS = {
     createList: ListCreationModal,
     groupSettings: GroupSettingsModal,
     groupMembers: GroupMembersModal,
+    groupInfo: GroupInfoModal,
 };
