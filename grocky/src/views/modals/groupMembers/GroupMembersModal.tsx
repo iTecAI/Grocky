@@ -8,6 +8,7 @@ import { ActionIcon, Avatar, Group, Paper, Select, Stack } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
 import { MdAccountCircle, MdAdd } from "react-icons/md";
+import { PillSelect } from "../../../components/PillSelection/PillSelectionInput";
 
 function MemberCard({
     group,
@@ -57,16 +58,7 @@ export function GroupMembersModal({
     const [search, setSearch] = useState("");
     const [searchDebounce] = useDebouncedValue(search, 250);
     const [searchResults, setSearchResults] = useState<User[]>([]);
-    const [selectedUser, setSelectedUser] = useState<string | null>(null);
-    const [selectedUserObj, setSelectedUserObj] = useState<User | null>(null);
-
-    useEffect(() => {
-        if (selectedUser) {
-            user.get(selectedUser).then(setSelectedUserObj);
-        } else {
-            setSelectedUserObj(null);
-        }
-    }, [selectedUser]);
+    const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
     useEffect(() => {
         if (searchDebounce.length > 0) {
@@ -79,24 +71,7 @@ export function GroupMembersModal({
     return groupData ? (
         <Stack gap="sm">
             <Group gap="sm">
-                <Select
-                    label={t("modals.groupMembers.search")}
-                    leftSection={
-                        selectedUserObj ? (
-                            <Avatar
-                                size="xs"
-                                src={selectedUserObj.profile_image}
-                            />
-                        ) : (
-                            <MdAccountCircle />
-                        )
-                    }
-                    searchable
-                    clearable
-                    onSearchChange={setSearch}
-                    searchValue={search}
-                    onChange={setSelectedUser}
-                    value={JSON.stringify(selectedUser)}
+                <PillSelect
                     data={searchResults
                         .filter(
                             (v) =>
@@ -105,10 +80,18 @@ export function GroupMembersModal({
                         )
                         .map((r) => ({
                             value: r.id,
-                            label: r.display_name,
+                            text: r.display_name,
+                            icon: r.profile_image ?? undefined,
                         }))}
-                    style={{
-                        flexGrow: 1,
+                    value={selectedUserIds}
+                    onChange={setSelectedUserIds}
+                    search={search}
+                    onSearchChange={setSearch}
+                    inputProps={{
+                        leftSection: <MdAccountCircle />,
+                        style: {
+                            flexGrow: 1,
+                        },
                     }}
                 />
                 <ActionIcon

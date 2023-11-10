@@ -87,7 +87,7 @@ export function GroupCreationModal({
     );
 
     const [userSearch, setUserSearch] = useState<string>("");
-    const [debouncedSearch] = useDebouncedValue(userSearch, 500);
+    const [debouncedSearch] = useDebouncedValue(userSearch, 250);
 
     const [options, setOptions] = useState<User[]>([]);
 
@@ -215,17 +215,13 @@ export function GroupCreationModal({
                             </Pill.Group>
                         </PillsInput>
                     </Combobox.DropdownTarget>
-                    <Combobox.Dropdown>
-                        <Combobox.Options>
-                            {renderedOptions.length > 0 ? (
-                                renderedOptions
-                            ) : (
-                                <Combobox.Empty>
-                                    {t("common.feedback.noResults")}
-                                </Combobox.Empty>
-                            )}
-                        </Combobox.Options>
-                    </Combobox.Dropdown>
+                    {renderedOptions.length > 0 && (
+                        <Combobox.Dropdown>
+                            <Combobox.Options>
+                                {renderedOptions}
+                            </Combobox.Options>
+                        </Combobox.Dropdown>
+                    )}
                 </Combobox>
                 <Group justify="space-between" gap="sm">
                     <Button
