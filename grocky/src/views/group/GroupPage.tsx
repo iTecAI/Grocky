@@ -81,7 +81,12 @@ export function GroupPage() {
                             <ActionIcon
                                 size="xl"
                                 variant="subtle"
-                                onClick={() => groupMembers({ group: groupId })}
+                                onClick={() =>
+                                    groupMembers({
+                                        group: groupId,
+                                        onClose: () => loadData(),
+                                    })
+                                }
                             >
                                 <MdGroups size="1.8em" />
                             </ActionIcon>

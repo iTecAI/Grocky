@@ -82,7 +82,7 @@ export function useModals(): {
                     innerProps: options,
                 });
             },
-            groupMembers: (options: { group: string }) => {
+            groupMembers: (options: { group: string; onClose: () => void }) => {
                 modals.openContextModal({
                     modal: "groupMembers",
                     title: (
@@ -92,6 +92,7 @@ export function useModals(): {
                         </Group>
                     ),
                     innerProps: options,
+                    onClose: options.onClose,
                 });
             },
         }),

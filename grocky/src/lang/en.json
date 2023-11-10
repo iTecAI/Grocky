@@ -14,7 +14,8 @@
     },
     "feedback": {
       "noResults": "No Results"
-    }
+    },
+    "confirm": "Confirm"
   },
   "views": {
     "layout": {
@@ -201,7 +202,18 @@
     },
     "groupMembers": {
       "title": "Group Members",
-      "search": "Add Members"
+      "search": "Add Members",
+      "member": {
+        "tooltip": {
+          "owner": "Group Owner",
+          "owner_set": "Make Owner",
+          "remove": "Remove"
+        },
+        "confirmOwner": {
+          "title": "Confirm Change of Owner",
+          "message": "Are you sure you want to make {{name}} the owner of this group? You will lose all group administration rights."
+        }
+      }
     }
   },
   "errors": {

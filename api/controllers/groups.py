@@ -93,11 +93,11 @@ class GroupsController(Controller):
         return group.json
 
     @put(
-        "/{id:str}/members/{user_id:str}",
+        "/{id:str}/members",
         dependencies={"group": Provide(depends_group)},
     )
     async def add_member(
-        self, group: Group, user: User, context: Context, user_id: str
+        self, group: Group, user: User, context: Context, data: list[str]
     ) -> list[RedactedUser]:
         if not user.id in [*group.members, group.owner]:
             raise ApiException("group.not_found", status_code=404)
@@ -105,9 +105,34 @@ class GroupsController(Controller):
         if user.id != group.owner:
             raise ApiException("group.not_owner", status_code=401)
 
-        if not user_id in group.members:
-            group.members.append(user_id)
+        for user_id in data:
+            if not user_id in group.members:
+                group.members.append(user_id)
 
         group.save()
         group.notify_self(context, "users", {"reason": "member.add"})
+        group.notify_self(context, "changed", {"reason": "member.add"})
+        return [u.redacted for u in group.users]
+
+    @post(
+        "/{id:str}/owner/{owner_id:str}",
+        dependencies={"group": Provide(depends_group)},
+    )
+    async def set_group_owner(
+        self, group: Group, user: User, context: Context, owner_id: str
+    ) -> list[RedactedUser]:
+        if not user.id in [*group.members, group.owner]:
+            raise ApiException("group.not_found", status_code=404)
+
+        if user.id != group.owner:
+            raise ApiException("group.not_owner", status_code=401)
+
+        if not group.owner in group.members:
+            group.members.append(group.owner)
+
+        group.owner = owner_id
+
+        group.save()
+        group.notify_self(context, "users", {"reason": "owner_change"})
+        group.notify_self(context, "changed", {"reason": "owner_change"})
         return [u.redacted for u in group.users]

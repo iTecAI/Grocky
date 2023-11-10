@@ -198,6 +198,31 @@ class GroupApiMethods {
             return null;
         }
     }
+
+    public async add_members(group: string, ids: string[]): Promise<User[]> {
+        const result = await this.request<User[]>(
+            "put",
+            `/groups/${group}/members`,
+            { body: ids },
+        );
+        if (result.success) {
+            return result.data;
+        } else {
+            return [];
+        }
+    }
+
+    public async change_owner(group: string, id: string): Promise<User[]> {
+        const result = await this.request<User[]>(
+            "post",
+            `/groups/${group}/owner/${id}`,
+        );
+        if (result.success) {
+            return result.data;
+        } else {
+            return [];
+        }
+    }
 }
 
 class ListApiMethods {

@@ -12,8 +12,10 @@ import logging
 logging.getLogger("uvicorn.access").addFilter(EndpointFilter(["/"]))
 logging.getLogger("uvicorn.error").addFilter(ErrorFilter())
 
+
 async def dep_context(state: State) -> Context:
     return state.context
+
 
 def server_exception_handler(req: Request, exc: Exception) -> Response:
     """Default handler for exceptions subclassed from HTTPException."""
@@ -22,26 +24,20 @@ def server_exception_handler(req: Request, exc: Exception) -> Response:
     req.app.logger.exception("Encountered server error:\n")
 
     return Response(
-        content={
-            "code": "error.server.unspecified",
-            "data": {
-                "detail": detail
-            }
-        },
+        content={"code": "error.server.unspecified", "data": {"detail": detail}},
         status_code=status_code,
     )
+
 
 def api_exception_handler(req: Request, exc: ApiException) -> Response:
     status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
     req.app.logger.warning(f"Handled error: {exc.error_code}")
 
     return Response(
-        content={
-            "code": exc.error_code,
-            "data": exc.error_data
-        },
+        content={"code": exc.error_code, "data": exc.error_data},
         status_code=status_code,
     )
+
 
 def ws_exception_handler(req: Request, exc: Exception) -> Response:
     """Default handler for exceptions subclassed from HTTPException."""
@@ -49,26 +45,22 @@ def ws_exception_handler(req: Request, exc: Exception) -> Response:
     detail = getattr(exc, "detail", "")
 
     return Response(
-        content={
-            "code": "error.server.unspecified",
-            "data": {
-                "detail": detail
-            }
-        },
+        content={"code": "error.server.unspecified", "data": {"detail": detail}},
         status_code=status_code,
     )
 
+
 @get("/")
 async def get_root() -> dict:
-    return {
-        "server_time": Time().utc
-    }
+    return {"server_time": Time().utc}
+
 
 channels_plugin = ChannelsPlugin(
     backend=MemoryChannelsBackend(),
     arbitrary_channels_allowed=True,
     ws_handler_base_path="/events",
-    create_ws_route_handlers=True
+    create_ws_route_handlers=True,
+    ws_handler_send_history=5,
 )
 
 context = Context(channels_plugin)
@@ -80,14 +72,14 @@ app = Litestar(
         StorageController,
         UserController,
         GroupsController,
-        ListsController
+        ListsController,
     ],
     state=State({"context": context}),
     dependencies={"context": Provide(dep_context)},
     exception_handlers={
         500: server_exception_handler,
-        ApiException: api_exception_handler
+        ApiException: api_exception_handler,
     },
     plugins=[channels_plugin],
-    cors_config=CORSConfig(allow_origins=["*"])
+    cors_config=CORSConfig(allow_origins=["*"]),
 )
