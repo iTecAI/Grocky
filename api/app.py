@@ -20,7 +20,7 @@ async def dep_context(state: State) -> Context:
 def server_exception_handler(req: Request, exc: Exception) -> Response:
     """Default handler for exceptions subclassed from HTTPException."""
     status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
-    detail = getattr(exc, "detail", "")
+    detail = getattr(exc, "detail", str(exc))
     req.app.logger.exception("Encountered server error:\n")
 
     return Response(

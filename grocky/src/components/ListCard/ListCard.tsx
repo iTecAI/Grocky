@@ -9,10 +9,12 @@ import {
     ListItem,
 } from "../../types/list";
 import { useApi } from "../../util/api";
+import { useNavigate } from "react-router-dom";
 
 export const ListCard = memo(({ list }: { list: ListType }) => {
     const { t } = useTranslation();
     const { lists } = useApi();
+    const nav = useNavigate();
     const IconElement = useMemo(() => {
         switch (list.type) {
             case "general":
@@ -31,7 +33,11 @@ export const ListCard = memo(({ list }: { list: ListType }) => {
     }, [list.id]);
 
     return (
-        <Card className="grocky-item list" withBorder>
+        <Card
+            className="grocky-item list"
+            withBorder
+            onClick={() => nav(`/list/${list.id}`)}
+        >
             <Stack gap="sm" className="item-layout">
                 <Group gap="sm" justify="space-between">
                     <IconElement size="1.8em" />

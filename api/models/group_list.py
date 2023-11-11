@@ -123,6 +123,7 @@ class TaskListItem(ListItem):
     def assignees(self) -> list[User]:
         return User.load_query(self.database, {"id": {"$in": self.assigned_to}})
 
+
 @dataclass
 class AssembledList:
     id: str
@@ -133,6 +134,7 @@ class AssembledList:
     type: Literal["grocery", "task", "general"]
     options: dict
     items: list[Union[ListItem, GroceryListItem, TaskListItem]]
+
 
 @dataclass
 class GrockyList(Record):
@@ -152,7 +154,7 @@ class GrockyList(Record):
     @property
     def sessions(self) -> list[Session]:
         return self.owner.sessions
-    
+
     @property
     def users(self) -> list[User]:
         if self.owned_by["type"] == "group":
@@ -180,6 +182,11 @@ class GrockyList(Record):
             [i.id for i in self.sessions], f"list.{event_subtype}", event_data=data
         )
 
+    def notify_self(self, context, event_subtype: str, data: dict):
+        context.post_event(
+            [i.id for i in self.sessions], f"list.{self.id}.{event_subtype}", event_data=data
+        )
+
     @property
     def assembled(self) -> AssembledList:
         return AssembledList(
@@ -190,5 +197,5 @@ class GrockyList(Record):
             owner=self.owner,
             type=self.type,
             options=self.options,
-            items=self.items
+            items=self.items,
         )
