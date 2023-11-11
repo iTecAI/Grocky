@@ -13,6 +13,7 @@ import { GeneralView } from "./views/GeneralView";
 import { GroceryView } from "./views/GroceryView";
 import { TaskView } from "./views/TaskView";
 import { Divider, Group, Stack, Text } from "@mantine/core";
+import { MdCheckBox, MdListAlt, MdShoppingBag } from "react-icons/md";
 
 function ListSubView({
     list,
@@ -67,7 +68,7 @@ export function ListPage() {
     useEffect(() => loadData(), [listId]);
 
     return (
-        <Stack gap="sm">
+        <Stack gap="sm" style={{ height: "100%" }}>
             <Group
                 gap="sm"
                 style={{
@@ -77,6 +78,16 @@ export function ListPage() {
                     flexFlow: "row",
                 }}
             >
+                {list &&
+                    (list.type === "general" ? (
+                        <MdListAlt size="1.3em" />
+                    ) : list.type === "grocery" ? (
+                        <MdShoppingBag size="1.3em" />
+                    ) : list.type === "task" ? (
+                        <MdCheckBox size="1.3em" />
+                    ) : (
+                        <></>
+                    ))}
                 <Text fw={500} style={{ display: "inline-block" }}>
                     {list?.name}
                 </Text>

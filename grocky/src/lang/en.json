@@ -71,6 +71,11 @@
       "actions": {
         "search": "Search"
       }
+    },
+    "list": {
+      "info": {
+        "no-item": "No Item Selected"
+      }
     }
   },
   "modals": {

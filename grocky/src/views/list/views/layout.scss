@@ -1,0 +1,30 @@
+.view-layout {
+    flex-grow: 1;
+
+    &.desktop {
+        .layout-body {
+            flex-grow: 1;
+            height: 100%;
+        }
+        .layout-info {
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+
+            .no-item {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                user-select: none;
+                pointer-events: none;
+            }
+        }
+    }
+
+    &.mobile {
+        .layout-body {
+            width: 100%;
+        }
+    }
+}
