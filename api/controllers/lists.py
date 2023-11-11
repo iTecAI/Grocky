@@ -123,7 +123,7 @@ class ListsController(Controller):
             img = requests.get(data.linked.images[0])
             if img.ok:
                 context.store_object(
-                    f"lists/images/{item_id}",
+                    f"lists.images.{item_id}",
                     img.content,
                     mime=img.headers.get("Content-Type", "application/octet-stream"),
                 )

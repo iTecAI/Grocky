@@ -12,6 +12,7 @@ import {
     Avatar,
     Button,
     Center,
+    Checkbox,
     Divider,
     Group,
     Loader,
@@ -39,7 +40,8 @@ import { useTranslation } from "react-i18next";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useApi } from "../../../util/api";
 import { useForm } from "@mantine/form";
-import { isString, startCase } from "lodash";
+import { capitalize, isString } from "lodash";
+import { useEnvironment } from "../../../util/hooks";
 
 /*
 const [viewing, setViewing] = useState<ViewingInfo | null>(null);
@@ -59,13 +61,33 @@ const RenderedGroceryItem = memo(
         view: (item: GroceryListItemType) => void;
         item: GroceryListItemType;
     }) => {
+        const { combined } = useEnvironment();
         return (
             <Paper
                 p="sm"
                 radius="sm"
                 shadow="sm"
                 className="list-item grocery"
-            ></Paper>
+                bg="dark"
+            >
+                <Group gap="md" align="center">
+                    <Checkbox size={combined === "desktop" ? "md" : "lg"} />
+                    <Stack gap="sm">
+                        <Group gap="sm">
+                            {item.image ? (
+                                <Avatar size="lg" src={"/api" + item.image} />
+                            ) : (
+                                <Avatar size="lg">
+                                    <MdShoppingBag />
+                                </Avatar>
+                            )}
+                            <Stack gap={2}>
+                                <Text>{item.title}</Text>
+                            </Stack>
+                        </Group>
+                    </Stack>
+                </Group>
+            </Paper>
         );
     },
 );
@@ -118,6 +140,13 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        if (
+            formValues.values.linkedItem &&
+            formValues.values.name.toLowerCase() ===
+                formValues.values.linkedItem.name.toLowerCase()
+        ) {
+            return;
+        }
         if (debouncedForSuggestion.length > 2) {
             setLoading(true);
             groceries
@@ -127,7 +156,15 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                     list.options.stores,
                 )
                 .then((result) => {
-                    setResults(result);
+                    setResults(
+                        result.reduce(
+                            (prev, current) =>
+                                !prev.map((p) => p.id).includes(current.id)
+                                    ? [...prev, current]
+                                    : prev,
+                            [] as GroceryItem[],
+                        ),
+                    );
                     setLoading(false);
                 });
         } else {
@@ -203,7 +240,10 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                                         maxWidth: "100%",
                                     }}
                                 >
-                                    {startCase(item.name)}
+                                    {item.name
+                                        .split(" ")
+                                        .map(capitalize)
+                                        .join(" ")}
                                 </Text>
                                 <Text
                                     size="sm"
@@ -214,7 +254,7 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                                     }}
                                     c="dimmed"
                                 >
-                                    {startCase(item.type)}
+                                    {capitalize(item.type)}
                                 </Text>
                             </Stack>
                         </Group>
@@ -244,7 +284,7 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                         categories: values.categories,
                         parent: null,
                     })
-                    .then(() => {}),
+                    .then(() => closeAllModals()),
             )}
         >
             <Stack gap="sm">
@@ -280,7 +320,10 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                                             );
                                             if (value) {
                                                 formValues.setValues({
-                                                    name: startCase(value.name),
+                                                    name: value.name
+                                                        .split(" ")
+                                                        .map(capitalize)
+                                                        .join(" "),
                                                     price: value.price,
                                                     categories:
                                                         value.categories,
@@ -308,7 +351,10 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                                             );
                                             if (value) {
                                                 formValues.setValues({
-                                                    name: startCase(value.name),
+                                                    name: value.name
+                                                        .split(" ")
+                                                        .map(capitalize)
+                                                        .join(" "),
                                                     price: value.price,
                                                     categories:
                                                         value.categories,
@@ -421,7 +467,15 @@ export function GroceryView({
                     style={{ flexGrow: 1, overflow: "auto" }}
                     className="item-list"
                 >
-                    <Stack gap="sm"></Stack>
+                    <Stack gap="sm">
+                        {items.map((item) => (
+                            <RenderedGroceryItem
+                                item={item}
+                                view={view}
+                                key={item.id}
+                            />
+                        ))}
+                    </Stack>
                 </Paper>
                 <ActionIcon
                     size="xl"
