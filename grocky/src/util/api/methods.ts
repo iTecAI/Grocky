@@ -1,6 +1,6 @@
 import { User } from "../../types/auth";
 import { GroupType } from "../../types/group";
-import { ListItem, ListType } from "../../types/list";
+import { GroceryItem, ListItem, ListType } from "../../types/list";
 import { RequestFunction, ApiContextType } from "./types";
 
 class AuthApiMethods {
@@ -285,11 +285,74 @@ class ListApiMethods {
     }
 }
 
+class GroceryApiMethods {
+    constructor(
+        private context: ApiContextType,
+        private request: RequestFunction,
+    ) {}
+
+    public async search(
+        term: string,
+        location: string,
+        stores: string[],
+    ): Promise<GroceryItem[]> {
+        const result = await this.request<GroceryItem[]>(
+            "get",
+            "/groceries/search",
+            {
+                params: {
+                    search: term,
+                    location,
+                    stores: stores.join(","),
+                },
+            },
+        );
+        if (result.success) {
+            return result.data;
+        }
+        return [];
+    }
+
+    public async suggest(
+        term: string,
+        location: string,
+        stores: string[],
+    ): Promise<string[]> {
+        const result = await this.request<string[]>("get", "/groceries/auto", {
+            params: {
+                search: term,
+                location,
+                stores: stores.join(","),
+            },
+        });
+        if (result.success) {
+            return result.data;
+        }
+        return [];
+    }
+
+    public async get_item(
+        store: string,
+        id: string,
+    ): Promise<GroceryItem | null> {
+        const result = await this.request<GroceryItem>(
+            "get",
+            `/groceries/items/${store}/${id}`,
+        );
+
+        if (result.success) {
+            return result.data;
+        }
+        return null;
+    }
+}
+
 export class ApiMethods {
     public auth: AuthApiMethods;
     public user: UserApiMethods;
     public groups: GroupApiMethods;
     public lists: ListApiMethods;
+    public groceries: GroceryApiMethods;
     constructor(
         private context: ApiContextType,
         private request: RequestFunction,
@@ -298,5 +361,6 @@ export class ApiMethods {
         this.user = new UserApiMethods(this.context, this.request);
         this.groups = new GroupApiMethods(this.context, this.request);
         this.lists = new ListApiMethods(this.context, this.request);
+        this.groceries = new GroceryApiMethods(this.context, this.request);
     }
 }

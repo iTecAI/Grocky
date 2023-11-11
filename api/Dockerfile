@@ -6,8 +6,9 @@ WORKDIR /usr/src/app
 COPY ./requirements.txt /usr/src/app/requirements.txt
 
 EXPOSE 8000
+ARG CACHEBUST=1 
 RUN apk --no-cache add gcc musl-dev
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r requirements.txt
+    pip install --upgrade --no-cache-dir -r requirements.txt
 
 CMD ["python3", "-m", "litestar", "run", "--reload", "--host", "0.0.0.0"]

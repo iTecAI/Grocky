@@ -43,6 +43,7 @@ export type GroceryItem = {
     location: string | null;
     images: string[];
     tags: string[];
+    categories: string[];
     price: number;
     ratings: GroceryRatings;
     metadata: { [key: string]: any };

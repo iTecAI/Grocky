@@ -2,10 +2,10 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from os import environ, getenv
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, Optional, AsyncIterator
 from models.auth import Session
 from open_groceries import OpenGrocery
-import time
+from datetime import datetime, timedelta
 from minio import Minio
 from minio.tagging import Tags
 import io
@@ -13,6 +13,10 @@ from litestar.channels import ChannelsPlugin
 from uuid import uuid4
 from datetime import timedelta
 from .time_conversions import Time
+import contextlib
+import asyncio
+
+EXPIRE_WORKERS = 3600
 
 
 @dataclass
@@ -31,8 +35,9 @@ class SecurityOptions:
 
 @dataclass
 class StoreOptions:
-    stores: str
+    stores: list[str]
     default_location: str
+    workers: int
 
 
 @dataclass
@@ -52,6 +57,22 @@ class ContextOptions:
     storage: StorageOptions
 
 
+@dataclass
+class GroceryWorker:
+    locks: int
+    location: str
+    created_at: datetime
+    worker: OpenGrocery
+
+    @classmethod
+    def create(cls, location: str, adapters: list[str]) -> "GroceryWorker":
+        worker = OpenGrocery(features=adapters)
+        worker.set_nearest_stores(location)
+        return GroceryWorker(
+            locks=0, location=location, created_at=Time().utc, worker=worker
+        )
+
+
 class Context:
     def __init__(self, channels: ChannelsPlugin) -> None:
         self.options: ContextOptions = self.get_options()
@@ -63,8 +84,12 @@ class Context:
             password=self.options.db.password,
         )
         self.database = self.client[self.options.db.database]
-        self.groceries = OpenGrocery(features=self.options.groceries.stores)
-        self.groceries.set_nearest_stores(near=self.options.groceries.default_location)
+        self.grocery_workers: dict[int, GroceryWorker] = {
+            0: GroceryWorker.create(
+                self.options.groceries.default_location,
+                self.options.groceries.stores,
+            )
+        }
         self.s3 = Minio(
             self.options.storage.host,
             access_key=self.options.storage.access_key,
@@ -77,8 +102,53 @@ class Context:
 
         self.event_channels = channels
 
+    @contextlib.asynccontextmanager
+    async def get_grocery_worker(self, location: str = None) -> AsyncIterator[OpenGrocery]:
+        select: int = None
+        while select == None:
+            for k, v in list(self.grocery_workers.items()):
+                if v.created_at + timedelta(seconds=EXPIRE_WORKERS) < Time().utc:
+                    if v.locks <= 0:
+                        del self.grocery_workers[k]
+                    continue
+
+                if v.location == location or location == None:
+                    select = k
+                    break
+
+            if select == None:
+                for k, v in self.grocery_workers.items():
+                    if v.locks <= 0:
+                        v.locks += 1
+                        v.location = location
+                        v.worker.set_nearest_stores(location)
+                        v.locks -= 1
+                        select = k
+                        break
+
+            if (
+                select == None
+                and len(self.grocery_workers.keys()) < self.options.groceries.workers
+            ):
+                new_id = max(list(self.grocery_workers.keys()), default=-1) + 1
+                self.grocery_workers[new_id] = GroceryWorker.create(
+                    location, self.options.groceries.stores
+                )
+                select = new_id
+
+            if select == None:
+                await asyncio.sleep(1)
+
+        self.grocery_workers[select].locks += 1
+        try:
+            yield self.grocery_workers[select].worker
+        finally:
+            self.grocery_workers[select].locks = max(
+                0, self.grocery_workers[select].locks - 1
+            )
+
     def get_options(self) -> ContextOptions:
-        #load_dotenv()
+        # load_dotenv()
         return ContextOptions(
             db=DatabaseOptions(
                 host=environ["MONGO_HOST"],
@@ -93,6 +163,7 @@ class Context:
             groceries=StoreOptions(
                 stores=getenv("STORES", "wegmans,costco").split(","),
                 default_location=getenv("DEFAULT_LOCATION", "Times Square NYC"),
+                workers=int(getenv("GROCERY_WORKERS", "10")),
             ),
             storage=StorageOptions(
                 host=environ["S3_HOST"],
@@ -104,7 +175,11 @@ class Context:
         )
 
     def check_session(self, session: Session) -> bool:
-        if session.last_request + timedelta(seconds=self.options.security.session_timeout) < Time().utc:
+        if (
+            session.last_request
+            + timedelta(seconds=self.options.security.session_timeout)
+            < Time().utc
+        ):
             session.destroy()
             return False
         else:
