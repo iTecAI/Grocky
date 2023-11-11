@@ -58,6 +58,35 @@ export function GroupPage() {
     return group && groupId && user ? (
         <Stack gap="sm">
             <Stack gap="sm" className="search-header">
+                <Group
+                    gap="sm"
+                    style={{
+                        whiteSpace: "nowrap",
+                        maxWidth: "100%",
+                        overflow: "hidden",
+                        flexFlow: "row",
+                    }}
+                >
+                    <Text fw={500} style={{ display: "inline-block" }}>
+                        {group.name}
+                    </Text>
+                    <Divider
+                        orientation="vertical"
+                        style={{ display: "inline-block" }}
+                    />
+                    <Text
+                        c="dimmed"
+                        style={{
+                            flexGrow: 1,
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            maxWidth: "100%",
+                            overflow: "hidden",
+                        }}
+                    >
+                        {group.description}
+                    </Text>
+                </Group>
                 <Group gap="sm">
                     <TextInput
                         value={search}

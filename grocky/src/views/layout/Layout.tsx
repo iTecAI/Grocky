@@ -16,7 +16,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEnvironment } from "../../util/hooks";
 import { MdLogin, MdLogout, MdSettings } from "react-icons/md";
 import { useModals } from "../modals";
-import { useApi, useUser } from "../../util/api";
+import { useApi, useReady, useUser } from "../../util/api";
 import { useEffect } from "react";
 
 function UserMenu() {
@@ -56,12 +56,13 @@ export function Layout() {
     const [user] = useUser();
     const nav = useNavigate();
     const location = useLocation();
+    const ready = useReady();
 
     useEffect(() => {
-        if (!user && location.pathname !== "/") {
+        if (!user && location.pathname !== "/" && ready) {
             nav("/");
         }
-    }, [user?.id, location]);
+    }, [user?.id, location, ready]);
 
     return (
         <AppShell className="app-root">
