@@ -78,6 +78,16 @@
       },
       "common": {
         "search": "Search..."
+      },
+      "groceries": {
+        "create": {
+          "title": "New Grocery Item",
+          "name": {
+            "label": "Item Name",
+            "placeholder": "Flour"
+          },
+          "suggestions": "Suggestions"
+        }
       }
     }
   },
