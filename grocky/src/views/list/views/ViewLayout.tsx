@@ -10,11 +10,9 @@ export function ViewLayout({ children, viewing }: LayoutProps) {
     const { t } = useTranslation();
 
     return width === "desktop" ? (
-        <Group className="view-layout desktop" gap={0}>
-            <Box className="layout-body desktop" p="sm">
-                {children}
-            </Box>
-            <Paper className="layout-info desktop" p="sm" radius="md" bg="dark">
+        <Group className="view-layout desktop" gap="sm">
+            <Box className="layout-body desktop">{children}</Box>
+            <Paper className="layout-info desktop" p="sm" radius="sm" bg="dark">
                 {viewing ? (
                     <Stack gap="sm">
                         <Text>{viewing.data.title}</Text>
@@ -36,10 +34,8 @@ export function ViewLayout({ children, viewing }: LayoutProps) {
             </Paper>
         </Group>
     ) : (
-        <>
-            <Box className="layout-body mobile" p="sm">
-                {children}
-            </Box>
+        <Box className="view-layout mobile">
+            <Box className="layout-body mobile">{children}</Box>
             <Modal
                 opened={viewing !== null}
                 title={viewing && viewing.data.title}
@@ -47,6 +43,6 @@ export function ViewLayout({ children, viewing }: LayoutProps) {
             >
                 {viewing?.body}
             </Modal>
-        </>
+        </Box>
     );
 }

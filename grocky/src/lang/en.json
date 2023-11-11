@@ -75,6 +75,9 @@
     "list": {
       "info": {
         "no-item": "No Item Selected"
+      },
+      "common": {
+        "search": "Search..."
       }
     }
   },

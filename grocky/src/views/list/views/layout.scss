@@ -1,14 +1,15 @@
 .view-layout {
-    flex-grow: 1;
-
     &.desktop {
+        height: calc(100% - 48px);
+        overflow-y: hidden;
         .layout-body {
-            flex-grow: 1;
-            height: 100%;
+            width: 50%;
+            height: calc(100% + 24px);
         }
         .layout-info {
-            flex-grow: 1;
+            width: calc(50% - 12px);
             height: 100%;
+            margin-top: -24px;
             position: relative;
 
             .no-item {
@@ -23,8 +24,25 @@
     }
 
     &.mobile {
+        height: calc(100% - 48px);
+        overflow-y: hidden;
         .layout-body {
             width: 100%;
+            height: calc(100% + 24px);
         }
+    }
+}
+
+.item-list {
+    position: relative;
+    height: calc(100% - 64px);
+}
+
+.body-root {
+    position: relative;
+    .new-item-btn {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
     }
 }

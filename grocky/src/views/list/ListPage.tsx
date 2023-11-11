@@ -74,6 +74,7 @@ export function ListPage() {
                 style={{
                     whiteSpace: "nowrap",
                     maxWidth: "100%",
+                    minHeight: "1.5em",
                     overflow: "hidden",
                     flexFlow: "row",
                 }}
