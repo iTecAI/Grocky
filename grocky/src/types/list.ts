@@ -74,6 +74,9 @@ export interface GroceryListItemType extends GenericListItem {
     type: "grocery";
     linked: null | LinkedGroceryItem;
     quantity: number;
+    price: number | null;
+    categories: string[];
+    location: string | null;
 }
 
 export interface TaskListItemType extends GenericListItem {
@@ -86,3 +89,21 @@ export type ListItem =
     | GeneralListItemType
     | GroceryListItemType
     | TaskListItemType;
+
+export type ListCreationModel =
+    | {
+          type: "grocery";
+          name: string;
+          linked: GroceryItem | null;
+          quantity: number;
+          price: number;
+          location: string | null;
+          categories: string[];
+          parent: string | null;
+      }
+    | {
+          type: "general";
+          name: string;
+          notes: string;
+          parent: string | null;
+      };

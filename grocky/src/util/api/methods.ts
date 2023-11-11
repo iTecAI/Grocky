@@ -1,6 +1,11 @@
 import { User } from "../../types/auth";
 import { GroupType } from "../../types/group";
-import { GroceryItem, ListItem, ListType } from "../../types/list";
+import {
+    GroceryItem,
+    ListCreationModel,
+    ListItem,
+    ListType,
+} from "../../types/list";
 import { RequestFunction, ApiContextType } from "./types";
 
 class AuthApiMethods {
@@ -282,6 +287,21 @@ class ListApiMethods {
             return result.data;
         }
         return null;
+    }
+
+    public async create_item(
+        list: string,
+        item: ListCreationModel,
+    ): Promise<ListItem[]> {
+        const result = await this.request<ListItem[]>(
+            "post",
+            `/lists/${list}/items/${item.type}`,
+            { body: item },
+        );
+        if (result.success) {
+            return result.data;
+        }
+        return [];
     }
 }
 

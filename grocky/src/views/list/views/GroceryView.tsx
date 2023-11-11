@@ -10,24 +10,36 @@ import {
     ActionIcon,
     Autocomplete,
     Avatar,
+    Button,
     Center,
     Divider,
-    Fieldset,
     Group,
     Loader,
+    NumberInput,
     Paper,
-    Space,
+    SimpleGrid,
     Stack,
+    TagsInput,
     Text,
     TextInput,
 } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { MdAdd, MdSearch, MdShoppingBag } from "react-icons/md";
+import {
+    MdAdd,
+    MdAttachMoney,
+    MdCancel,
+    MdCategory,
+    MdCheck,
+    MdLocationPin,
+    MdNumbers,
+    MdSearch,
+    MdShoppingBag,
+} from "react-icons/md";
 import { useTranslation } from "react-i18next";
-import { openModal } from "@mantine/modals";
-import { useApi, useUser } from "../../../util/api";
+import { closeAllModals, openModal } from "@mantine/modals";
+import { useApi } from "../../../util/api";
 import { useForm } from "@mantine/form";
-import { startCase } from "lodash";
+import { isString, startCase } from "lodash";
 
 /*
 const [viewing, setViewing] = useState<ViewingInfo | null>(null);
@@ -59,21 +71,31 @@ const RenderedGroceryItem = memo(
 );
 
 const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
-    const [user] = useUser();
-    const { groceries } = useApi();
+    const { groceries, lists } = useApi();
 
-    const form = useForm<{
+    const formValues = useForm<{
         name: string;
         linkedItem: null | GroceryItem;
+        quantity: number;
+        price: number;
+        location: string;
+        categories: string[];
     }>({
         initialValues: {
             name: "",
             linkedItem: null,
+            quantity: 1,
+            price: 0,
+            location: "",
+            categories: [],
         },
     });
 
-    const [debouncedSearch] = useDebouncedValue(form.values.name, 250);
-    const [debouncedForSuggestion] = useDebouncedValue(form.values.name, 750);
+    const [debouncedSearch] = useDebouncedValue(formValues.values.name, 250);
+    const [debouncedForSuggestion] = useDebouncedValue(
+        formValues.values.name,
+        750,
+    );
 
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [results, setResults] = useState<GroceryItem[]>([]);
@@ -128,8 +150,8 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                     bg="dark"
                     style={{
                         border:
-                            form.values.linkedItem &&
-                            item.id === form.values.linkedItem.id
+                            formValues.values.linkedItem &&
+                            item.id === formValues.values.linkedItem.id
                                 ? "1px solid var(--mantine-color-grape-filled)"
                                 : undefined,
                         cursor: "pointer",
@@ -138,8 +160,8 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                     }}
                     onClick={() =>
                         onTrigger(
-                            form.values.linkedItem &&
-                                item.id === form.values.linkedItem.id
+                            formValues.values.linkedItem &&
+                                item.id === formValues.values.linkedItem.id
                                 ? null
                                 : item,
                         )
@@ -200,11 +222,31 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                 </Paper>
             );
         },
-        [form.values.linkedItem],
+        [formValues.values.linkedItem],
     );
 
     return (
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form
+            onSubmit={formValues.onSubmit((values) =>
+                lists
+                    .create_item(list.id, {
+                        type: "grocery",
+                        name: values.name,
+                        linked: values.linkedItem,
+                        quantity: isString(values.quantity)
+                            ? 0
+                            : values.quantity,
+                        price: isString(values.price) ? 0 : values.price,
+                        location:
+                            values.location.length === 0
+                                ? null
+                                : values.location,
+                        categories: values.categories,
+                        parent: null,
+                    })
+                    .then(() => {}),
+            )}
+        >
             <Stack gap="sm">
                 <Autocomplete
                     label={t("views.list.groceries.create.name.label")}
@@ -214,33 +256,37 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                     leftSection={<MdShoppingBag />}
                     limit={5}
                     data={suggestions}
-                    {...form.getInputProps("name")}
+                    {...formValues.getInputProps("name")}
                 />
-                {(form.values.linkedItem || results.length > 0) && (
+                {(formValues.values.linkedItem || results.length > 0) && (
                     <Paper
                         withBorder
                         p="sm"
                         style={{
-                            maxHeight: "384px",
+                            maxHeight: "50vh",
                             overflow: "auto",
                             maxWidth: "100%",
                         }}
                     >
                         <Stack gap="sm">
-                            {form.values.linkedItem && (
+                            {formValues.values.linkedItem && (
                                 <>
                                     <ItemResult
-                                        item={form.values.linkedItem}
+                                        item={formValues.values.linkedItem}
                                         onTrigger={(value) => {
-                                            form.setFieldValue(
+                                            formValues.setFieldValue(
                                                 "linkedItem",
                                                 value,
                                             );
                                             if (value) {
-                                                form.setFieldValue(
-                                                    "name",
-                                                    startCase(value.name),
-                                                );
+                                                formValues.setValues({
+                                                    name: startCase(value.name),
+                                                    price: value.price,
+                                                    categories:
+                                                        value.categories,
+                                                    location:
+                                                        value.location ?? "",
+                                                });
                                             }
                                         }}
                                     />
@@ -252,28 +298,83 @@ const NewGroceryItemModal = memo(({ list }: { list: ListType }) => {
                                     <Loader />
                                 </Center>
                             ) : (
-                                results.map((item) => (
+                                results.map((item, i) => (
                                     <ItemResult
                                         item={item}
                                         onTrigger={(value) => {
-                                            form.setFieldValue(
+                                            formValues.setFieldValue(
                                                 "linkedItem",
                                                 value,
                                             );
                                             if (value) {
-                                                form.setFieldValue(
-                                                    "name",
-                                                    startCase(value.name),
-                                                );
+                                                formValues.setValues({
+                                                    name: startCase(value.name),
+                                                    price: value.price,
+                                                    categories:
+                                                        value.categories,
+                                                    location:
+                                                        value.location ?? "",
+                                                });
                                             }
                                         }}
-                                        key={item.id}
+                                        key={i}
                                     />
                                 ))
                             )}
                         </Stack>
                     </Paper>
                 )}
+                <SimpleGrid
+                    cols={{ base: 1, lg: 3 }}
+                    spacing="sm"
+                    verticalSpacing="sm"
+                >
+                    <NumberInput
+                        label={t("views.list.groceries.create.quantity")}
+                        allowNegative={false}
+                        allowDecimal={false}
+                        allowLeadingZeros={false}
+                        leftSection={<MdNumbers />}
+                        {...formValues.getInputProps("quantity")}
+                    />
+                    <NumberInput
+                        label={t("views.list.groceries.create.price")}
+                        allowNegative={false}
+                        leftSection={<MdAttachMoney />}
+                        prefix="$"
+                        decimalScale={2}
+                        {...formValues.getInputProps("price")}
+                    />
+
+                    <TextInput
+                        label={t("views.list.groceries.create.aisle")}
+                        leftSection={<MdLocationPin />}
+                        {...formValues.getInputProps("location")}
+                    />
+                </SimpleGrid>
+                <TagsInput
+                    label={t("views.list.groceries.create.categories")}
+                    leftSection={<MdCategory />}
+                    {...formValues.getInputProps("categories")}
+                />
+                <Group gap="sm" justify="space-between">
+                    <Button
+                        color="red"
+                        variant="subtle"
+                        leftSection={<MdCancel size="1.3em" />}
+                        justify="space-between"
+                        onClick={() => closeAllModals()}
+                    >
+                        {t("common.actions.cancel")}
+                    </Button>
+                    <Button
+                        type="submit"
+                        leftSection={<MdCheck size="1.3em" />}
+                        justify="space-between"
+                    >
+                        {t("common.actions.submit")}
+                    </Button>
+                </Group>
             </Stack>
         </form>
     );
@@ -330,6 +431,7 @@ export function GroceryView({
                         openModal({
                             title: t("views.list.groceries.create.title"),
                             children: <NewGroceryItemModal list={list} />,
+                            size: "xl",
                         })
                     }
                 >

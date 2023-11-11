@@ -1,5 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
+
+from pymongo.database import Database
 from util.orm import Record
 from util.time_conversions import Time
 from .auth import Session, User
@@ -102,7 +104,10 @@ class ListItem(Record):
 class GroceryListItem(ListItem):
     type: Literal["grocery"]
     linked: Union[None, LinkedGroceryItem]
-    quantity: datetime
+    quantity: int
+    price: Union[None, float] = None
+    categories: list[str] = field(default_factory=list)
+    location: Union[None, str] = None
 
     @property
     def alternative_to(self) -> Union[None, "GroceryListItem"]:
@@ -111,6 +116,55 @@ class GroceryListItem(ListItem):
     @property
     def alternatives(self) -> list["GroceryListItem"]:
         return self.children
+
+    def save(self):
+        serialized = {
+            k: v for k, v in self.__dict__.items() if not k in ["database", "_id"]
+        }
+        if self.linked:
+            serialized["linked"] = {
+                "item": {k: v for k, v in self.linked.item.__dict__.items()},
+                "last_update": self.linked.last_update,
+                "linked": self.linked.linked,
+            }
+        self.collection.replace_one(
+            {"id": self.id},
+            serialized,
+            upsert=True,
+        )
+
+    @classmethod
+    def load_id(cls, database: Database, id: str) -> Record | None:
+        collection = database[cls.collection_name]
+        result = collection.find_one({"id": id})
+        if result:
+            kwargs = {k: v for k, v in result.items() if k != "_id"}
+            if kwargs["linked"]:
+                kwargs["linked"] = LinkedGroceryItem(
+                    item=GroceryItem(**kwargs["linked"]["item"]),
+                    last_update=kwargs["linked"]["last_update"],
+                    linked=kwargs["linked"]["linked"],
+                )
+            return cls(database=database, **kwargs)
+        else:
+            return None
+
+    @classmethod
+    def load_query(cls, database: Database, query: dict) -> list[Record]:
+        collection = database[cls.collection_name]
+        result = collection.find(query)
+        ret = []
+        for r in result:
+            kwargs = {k: v for k, v in r.items() if k != "_id"}
+            if kwargs["linked"]:
+                kwargs["linked"] = LinkedGroceryItem(
+                    item=GroceryItem(**kwargs["linked"]["item"]),
+                    last_update=kwargs["linked"]["last_update"],
+                    linked=kwargs["linked"]["linked"],
+                )
+
+            ret.append(cls(database=database, **kwargs))
+        return ret
 
 
 @dataclass

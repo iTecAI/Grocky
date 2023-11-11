@@ -7,6 +7,7 @@ from util import (
     depends_session,
     depends_user,
     ApiException,
+    Time,
 )
 from models import (
     GrockyList,
@@ -16,9 +17,12 @@ from models import (
     OwnerDescriptor,
     User,
     AssembledList,
+    LinkedGroceryItem,
 )
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Optional, Union, Literal
+from open_groceries import GroceryItem
+import requests
 
 
 @dataclass
@@ -28,6 +32,26 @@ class ListCreationModel:
     type: str
     owner: OwnerDescriptor
     options: Optional[dict]
+
+
+@dataclass
+class GroceryItemCreationModel:
+    type: Literal["grocery"]
+    name: str
+    linked: Optional[dict]
+    quantity: int
+    price: float
+    location: Optional[str]
+    categories: list[str]
+    parent: Optional[str] = None
+
+
+@dataclass
+class GeneralItemCreationModel:
+    type: Literal["general"]
+    name: str
+    notes: str
+    parent: Optional[str] = None
 
 
 async def depends_list(list_id: str, context: Context, user: User) -> GrockyList:
@@ -79,4 +103,56 @@ class ListsController(Controller):
     async def get_list_items(
         self, list_item: GrockyList
     ) -> list[Union[TaskListItem, GroceryListItem, ListItem]]:
+        return [i.json for i in list_item.items]
+
+    @post(
+        "/{list_id:str}/items/grocery",
+        dependencies={"list_item": Provide(depends_list)},
+    )
+    async def add_grocery_item(
+        self,
+        context: Context,
+        user: User,
+        list_item: GrockyList,
+        data: GroceryItemCreationModel,
+    ) -> list[Union[TaskListItem, GroceryListItem, ListItem]]:
+        if data.linked:
+            data.linked = GroceryItem(**data.linked)
+        item_id = GroceryListItem._id()
+        if data.linked and len(data.linked.images) > 0:
+            img = requests.get(data.linked.images[0])
+            if img.ok:
+                context.store_object(
+                    f"lists/images/{item_id}",
+                    img.content,
+                    mime=img.headers.get("Content-Type", "application/octet-stream"),
+                )
+            image = f"/storage/lists/images/{item_id}"
+        else:
+            image = None
+
+        new_item = GroceryListItem(
+            id=item_id,
+            database=context.database,
+            type="grocery",
+            added_by=user.id,
+            checked=False,
+            list_id=list_item.id,
+            parent_id=data.parent,
+            image=image,
+            title=data.name,
+            notes="",
+            linked=LinkedGroceryItem(
+                item=data.linked, last_update=Time().utc, linked=True
+            )
+            if data.linked
+            else None,
+            quantity=data.quantity,
+            price=data.price,
+            categories=data.categories,
+            location=data.location,
+        )
+
+        new_item.save()
+        list_item.notify_self(context, "update", {"reason": "item.added"})
         return [i.json for i in list_item.items]

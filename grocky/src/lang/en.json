@@ -86,7 +86,11 @@
             "label": "Item Name",
             "placeholder": "Flour"
           },
-          "suggestions": "Suggestions"
+          "suggestions": "Suggestions",
+          "quantity": "Quantity",
+          "price": "Price",
+          "categories": "Categories",
+          "aisle": "Aisle / Location"
         }
       }
     }
