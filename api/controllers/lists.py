@@ -76,7 +76,7 @@ class ListsController(Controller):
         return list_item.assembled
 
     @get("/{list_id:str}/items", dependencies={"list_item": Provide(depends_list)})
-    async def get_list(
+    async def get_list_items(
         self, list_item: GrockyList
     ) -> list[Union[TaskListItem, GroceryListItem, ListItem]]:
         return [i.json for i in list_item.items]

@@ -184,7 +184,9 @@ class GrockyList(Record):
 
     def notify_self(self, context, event_subtype: str, data: dict):
         context.post_event(
-            [i.id for i in self.sessions], f"list.{self.id}.{event_subtype}", event_data=data
+            [i.id for i in self.sessions],
+            f"list.{self.id}.{event_subtype}",
+            event_data=data,
         )
 
     @property
@@ -194,8 +196,10 @@ class GrockyList(Record):
             name=self.name,
             description=self.description,
             owner_type=self.owned_by["type"],
-            owner=self.owner,
+            owner=self.owner.redacted
+            if self.owned_by["type"] == "user"
+            else self.owner.json,
             type=self.type,
             options=self.options,
-            items=self.items,
+            items=[i.json for i in self.items],
         )
